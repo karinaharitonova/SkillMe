@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "121043818202",
+    "project_id": "skillme-67bfb",
+    "storage_bucket": "skillme-67bfb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:121043818202:android:6fb38aecceac24ad47f7e3",
+        "android_client_info": {
+          "package_name": "com.example.myapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8wAwvXCjBAyfU8PIZcCJ29bbm3IksTu0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
