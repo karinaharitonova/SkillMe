@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+final apiKey = dotenv.env['API_KEY'];
+
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

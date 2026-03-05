@@ -1,6 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/pages/login_page.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+final apiKey = dotenv.env['API_KEY'];
+
 
 class FavoritePage extends StatelessWidget {
   const FavoritePage({super.key});

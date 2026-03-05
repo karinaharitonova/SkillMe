@@ -4,6 +4,10 @@ import 'package:myapp/pages/favorite_page.dart';
 import 'package:myapp/pages/login_page.dart';
 import 'package:myapp/pages/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+final apiKey = dotenv.env['API_KEY'];
+
 
 
 class FirstPage extends StatefulWidget {

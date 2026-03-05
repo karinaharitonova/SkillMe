@@ -3,6 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/pages/snack_bar.dart';
 import 'package:myapp/pages/email_page.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+final apiKey = dotenv.env['API_KEY'];
+
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
