@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/pages/account_page.dart';
+import 'package:myapp/pages/categories_page.dart';
 import 'package:myapp/pages/favorite_page.dart';
-import 'package:myapp/pages/login_page.dart';
 import 'package:myapp/pages/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:myapp/pages/dobro_pozalovat_page.dart';
 
 final apiKey = dotenv.env['API_KEY'];
 
@@ -20,7 +21,7 @@ class _FirstPageState extends State<FirstPage> {
  int _selectedIndex = 0;
 
 
-final List _pages = [HomePage(),FavoritePage(),AccountPage()];
+final List _pages = [HomePage(),CategoriesPage(),FavoritePage(),AccountPage()];
   @override
   Widget build(BuildContext context) {
     // различный фон в зависимости от выбранной вкладки
@@ -49,35 +50,34 @@ final List _pages = [HomePage(),FavoritePage(),AccountPage()];
         currentIndex: _selectedIndex,
         selectedItemColor: const Color(0xFF4A90E2),
         unselectedItemColor: const Color(0xFFBDBDBD),
-        onTap:(index)
-        {
-          final user = FirebaseAuth.instance.currentUser;
-          if (index == 2)
-            {
-              if (user ==null)
-              {
-                Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginPage()),
-              );
-            } else
-          {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const AccountPage()),
-              );
-          }
-            }
-          else
-          {
-            setState(() {
-              _selectedIndex = index;
-            });
-          }
-          },
+        onTap: (index) {
+  final user = FirebaseAuth.instance.currentUser;
+
+  if (index == 3) {
+    if (user == null) {
+      // Пользователь НЕ вошёл → показываем страницу "Добро пожаловать"
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const DobroPozalovatPage()),
+      );
+    } else {
+      // Пользователь вошёл → открываем профиль
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const AccountPage()),
+      );
+    }
+  } else {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+},
+
         items: const [BottomNavigationBarItem(icon: Icon(Icons.home),label: ''),
+          BottomNavigationBarItem(icon:Icon(Icons.category),label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.favorite),label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.person),label: ''),],
+          BottomNavigationBarItem(icon: Icon(Icons.person),label: '')],
       ),
     );
   }

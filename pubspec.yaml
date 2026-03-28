@@ -65,6 +65,10 @@ google_sign_in: ^5.4.0
 
 # The following section is specific to Flutter packages.
 flutter:
+  fonts:
+    - family: GreatVibes
+      fonts:
+        - asset: lib/fonts/GreatVibes-Regular.ttf
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

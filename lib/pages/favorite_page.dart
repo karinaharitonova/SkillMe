@@ -1,9 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/pages/login_page.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
-final apiKey = dotenv.env['API_KEY'];
 
 
 class FavoritePage extends StatelessWidget {
@@ -15,52 +12,75 @@ class FavoritePage extends StatelessWidget {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text('Избранное'),
-      ),
 
-      body: Center(
-  child: Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 60),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
 
-      // Текст
-      Text(
-        user == null
-            ? "Войдите в аккаунт, чтобы добавлять видео в избранное"
-            : "Избранных видео пока нет. Добавьте что-нибудь!",
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 16),
-      ),
-
-      const SizedBox(height: 24),
-
-      // Кнопка показывается ТОЛЬКО если user == null
-      if (user == null)
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF4A90E2),
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+            // Заголовок
+            const Text(
+              'ИЗБРАННОЕ',
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const LoginPage()),
-            );
-          },
-          child: const Text(
-            'Войти',
-            style: TextStyle(fontSize: 18),
-          ),
+
+            const SizedBox(height: 40),
+
+            // Центрированный текст
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      user == null
+                          ? "Войдите в аккаунт, чтобы добавлять видео в избранное"
+                          : "Избранных видео пока нет. Добавьте что-нибудь!",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    if (user == null)
+                      SizedBox(
+                        width: 200,
+                        height: 50,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF064A8F),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const LoginPage()),
+                            );
+                          },
+                          child: const Text(
+                            'Войти',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
-    ],
-  ),
-),
+      ),
     );
   }
 }
+

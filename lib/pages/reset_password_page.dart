@@ -6,7 +6,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final apiKey = dotenv.env['API_KEY'];
 
-
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key});
 
@@ -15,29 +14,25 @@ class ResetPasswordPage extends StatefulWidget {
 }
 
 class _ResetPasswordScreenState extends State<ResetPasswordPage> {
-  TextEditingController emailTextInputController = TextEditingController();
+  final emailController = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
-    emailTextInputController.dispose();
-
+    emailController.dispose();
     super.dispose();
   }
 
   Future<void> resetPassword() async {
     final navigator = Navigator.of(context);
-    final scaffoldMassager = ScaffoldMessenger.of(context);
 
-    final isValid = formKey.currentState!.validate();
-    if (!isValid) return;
+    if (!formKey.currentState!.validate()) return;
 
     try {
-      await FirebaseAuth.instance
-          .sendPasswordResetEmail(email: emailTextInputController.text.trim());
+      await FirebaseAuth.instance.sendPasswordResetEmail(
+        email: emailController.text.trim(),
+      );
     } on FirebaseAuthException catch (e) {
-      print(e.code);
-
       if (e.code == 'user-not-found') {
         SnackBarService.showSnackBar(
           context,
@@ -48,53 +43,103 @@ class _ResetPasswordScreenState extends State<ResetPasswordPage> {
       } else {
         SnackBarService.showSnackBar(
           context,
-          'Неизвестная ошибка! Попробуйте еще раз или обратитесь в поддержку.',
+          'Ошибка! Попробуйте снова.',
           true,
         );
         return;
       }
     }
 
-    const snackBar = SnackBar(
-      content: Text('Сброс пароля осуществен. Проверьте почту'),
-      backgroundColor: Colors.green,
+    SnackBarService.showSnackBar(
+      context,
+      'Ссылка для сброса отправлена на почту',
+      false,
     );
 
-    scaffoldMassager.showSnackBar(snackBar);
-
-    navigator.pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+    navigator.pop();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: const Text('Сброс пароля'),
-      ),
+
       body: Padding(
-        padding: const EdgeInsets.all(30.0),
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 60),
         child: Form(
           key: formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+
+              // Стрелка + заголовок
+              Row(
+                children: [
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    icon: const Icon(Icons.arrow_back),
+                    color: Colors.black,
+                    iconSize: 28,
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  const SizedBox(width: 10),
+                  const Text(
+                    'СБРОС ПАРОЛЯ',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 40),
+
+              // Поле Email
               TextFormField(
-                keyboardType: TextInputType.emailAddress,
-                autocorrect: false,
-                controller: emailTextInputController,
+                controller: emailController,
+                keyboardType: TextInputType.text, // разрешает русский ввод
                 validator: (email) =>
                     email != null && !EmailValidator.validate(email)
-                        ? 'Введите правильный Email'
+                        ? 'Введите корректный Email'
                         : null,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
                   hintText: 'Введите Email',
+                  filled: true,
+                  fillColor: const Color.fromARGB(221, 212, 239, 252),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 18,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
+
               const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: resetPassword,
-                child: const Center(child: Text('Сбросить пароль')),
+
+              // Кнопка сброса
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 6, 74, 143),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  onPressed: resetPassword,
+                  child: const Text(
+                    'Сбросить пароль',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

@@ -3,9 +3,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/pages/snack_bar.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-final apiKey = dotenv.env['API_KEY'];
 
 
 class LoginPage extends StatefulWidget {
@@ -17,23 +15,19 @@ class LoginPage extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginPage> {
   bool isHiddenPassword = true;
-  TextEditingController emailTextInputController = TextEditingController();
-  TextEditingController passwordTextInputController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
+
+  int currentIndex = 0;
 
   @override
   void dispose() {
-    emailTextInputController.dispose();
-    passwordTextInputController.dispose();
-
+    emailController.dispose();
+    passwordController.dispose();
     super.dispose();
   }
 
-  void togglePasswordView() {
-    setState(() {
-      isHiddenPassword = !isHiddenPassword;
-    });
-  }
 
   Future<void> login() async {
     final navigator = Navigator.of(context);
@@ -43,8 +37,8 @@ class _LoginScreenState extends State<LoginPage> {
 
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailTextInputController.text.trim(),
-        password: passwordTextInputController.text.trim(),
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
       );
     } on FirebaseAuthException catch (e) {
       print(e.code);
@@ -72,71 +66,172 @@ class _LoginScreenState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: const Text('Войти'),
-      ),
       body: Padding(
-        padding: const EdgeInsets.all(30.0),
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 60),
         child: Form(
           key: formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+            Padding(
+  padding: const EdgeInsets.only(left: 0),
+  child: Row(
+    children: [
+      IconButton(
+        padding: EdgeInsets.zero, 
+        icon: const Icon(Icons.arrow_back),
+        color: Colors.black,
+        iconSize: 28,
+        onPressed: () => Navigator.pop(context),
+      ),
+      const SizedBox(width: 10),
+      const Text(
+        'ВХОД',
+        style: TextStyle(
+          fontSize: 32,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ],
+  ),
+),
+
+
+              const SizedBox(height: 40),
+
               TextFormField(
+                controller: emailController,
                 keyboardType: TextInputType.emailAddress,
-                autocorrect: false,
-                controller: emailTextInputController,
                 validator: (email) =>
                     email != null && !EmailValidator.validate(email)
-                        ? 'Введите правильный Email'
+                        ? 'Введите корректный Email'
                         : null,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
                   hintText: 'Введите Email',
+                  filled: true,
+                  fillColor: const Color.fromARGB(221, 212, 239, 252),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 18,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
-              const SizedBox(height: 30),
+
+              const SizedBox(height: 20),
+
               TextFormField(
-                autocorrect: false,
-                controller: passwordTextInputController,
+                controller: passwordController,
                 obscureText: isHiddenPassword,
-                validator: (value) => value != null && value.length < 6
-                    ? 'Минимум 6 символов'
-                    : null,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
+                validator: (value) =>
+                    value != null && value.length < 6
+                        ? 'Минимум 6 символов'
+                        : null,
                 decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
                   hintText: 'Введите пароль',
-                  suffix: InkWell(
-                    onTap: togglePasswordView,
-                    child: Icon(
+                  filled: true,
+                  fillColor: const Color.fromARGB(221, 212, 239, 252),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 18,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
                       isHiddenPassword
                           ? Icons.visibility_off
                           : Icons.visibility,
                       color: Colors.black,
                     ),
+                    onPressed: () {
+                      setState(() => isHiddenPassword = !isHiddenPassword);
+                    },
                   ),
                 ),
               ),
+
               const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: login,
-                child: const Center(child: Text('Войти')),
-              ),
-              const SizedBox(height: 30),
-              TextButton(
-                onPressed: () => Navigator.of(context).pushNamed('/signup'),
-                child: const Text(
-                  'Регистрация',
-                  style: TextStyle(
-                    decoration: TextDecoration.underline,
+
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 6, 74, 143),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  onPressed: login,
+                  child: const Text(
+                    'Войти',
+                    style: TextStyle(fontSize: 18, color: Color.fromARGB(235, 255, 255, 255)),
                   ),
                 ),
               ),
-              TextButton(
-                onPressed: () =>
-                    Navigator.of(context).pushNamed('/reset_password'),
-                child: const Text('Сбросить пароль'),
+
+              const SizedBox(height: 25),
+
+Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: [
+    SizedBox(
+      width: 55,
+      height: 55,
+      child: Image.asset(
+        'lib/images/VK.png',
+        fit: BoxFit.contain,
+      ),
+    ),
+    const SizedBox(width: 25),
+    SizedBox(
+      width: 55,
+      height: 55,
+      child: Image.asset(
+        'lib/images/max.jpg',
+        fit: BoxFit.contain,
+      ),
+    ),
+  ],
+),
+
+
+              Center(
+                child: TextButton(
+                  onPressed: () =>
+                      Navigator.of(context).pushNamed('/reset_password'),
+                  child: const Text(
+                    'Сбросить пароль',
+                    style: TextStyle(
+                      decoration: TextDecoration.underline,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              Center(
+                child: GestureDetector(
+                  onTap: () =>
+                      Navigator.of(context).pushNamed('/signup'),
+                  child: const Text(
+                    'Еще нет аккаунта? Регистрация',
+                    style: TextStyle(
+                      decoration: TextDecoration.underline,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
