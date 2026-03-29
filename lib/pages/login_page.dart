@@ -67,50 +67,79 @@ class _LoginScreenState extends State<LoginPage> {
     return Scaffold(
       
       resizeToAvoidBottomInset: false,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 50),
-        child: Form(
-          key: formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+
+      body: Stack(
+        children: [
+
+          Positioned.fill(
+            child: Image.asset(
+              'lib/images/Registr.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+
+
             Padding(
-  padding: const EdgeInsets.only(left: 0),
-  child: Row(
-    children: [
-      IconButton(
-        padding: EdgeInsets.zero, 
-        icon: const Icon(Icons.arrow_back),
-        color: Colors.black,
-        iconSize: 28,
-        onPressed: () => Navigator.of(context).pushNamed('/dobro_pozalovat'),
-      ),
-      const SizedBox(width: 10),
-      const Text(
-        'ВХОД',
-        style: TextStyle(
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    ],
-  ),
-),
+
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 50),
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+
+                        Row(
+                          children: [
+                        IconButton(
+                          padding: EdgeInsets.zero, 
+                          icon: const Icon(Icons.arrow_back),
+                          color: Colors.black,
+                          iconSize: 28,
+                          onPressed: () => Navigator.of(context).pushNamed('/dobro_pozalovat'),
+                        ),
+                      ],
+                   ),
 
 
               const SizedBox(height: 40),
 
-              TextFormField(
+              Center(
+                    child: Text(
+                      'SkillMe',
+                      style: TextStyle(
+                        fontSize: 75,
+                        fontFamily: 'Alana',
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 50),
+
+
+              Container(
+                decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                      Color(0xFFCBDDFD), 
+                      Color(0xFF5D65D6), 
+                    ],
+                    stops: [0.6, 1.0],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius:BorderRadius.all(Radius.circular(14)),
+              ),
+
+                child: TextFormField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
-                validator: (email) =>
+                validator: (email) => 
                     email != null && !EmailValidator.validate(email)
                         ? 'Введите корректный Email'
                         : null,
                 decoration: InputDecoration(
                   hintText: 'Введите Email',
-                  filled: true,
-                  fillColor: const Color.fromARGB(221, 212, 239, 252),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 18,
@@ -121,10 +150,25 @@ class _LoginScreenState extends State<LoginPage> {
                   ),
                 ),
               ),
+                ),
 
               const SizedBox(height: 20),
 
-              TextFormField(
+              Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [
+                      Color(0xFFCBDDFD), 
+                      Color(0xFF5D65D6), 
+                    ],
+                    stops: [0.6, 1.0],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(14),
+              ),
+
+              child:TextFormField(
                 controller: passwordController,
                 obscureText: isHiddenPassword,
                 validator: (value) =>
@@ -133,8 +177,6 @@ class _LoginScreenState extends State<LoginPage> {
                         : null,
                 decoration: InputDecoration(
                   hintText: 'Введите пароль',
-                  filled: true,
-                  fillColor: const Color.fromARGB(221, 212, 239, 252),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 18,
@@ -156,6 +198,7 @@ class _LoginScreenState extends State<LoginPage> {
                   ),
                 ),
               ),
+            ),
 
               const SizedBox(height: 30),
 
@@ -164,7 +207,7 @@ class _LoginScreenState extends State<LoginPage> {
                 height: 55,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 6, 74, 143),
+                    backgroundColor: const Color.fromRGBO(40, 43, 74, 1),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),
@@ -177,30 +220,30 @@ class _LoginScreenState extends State<LoginPage> {
                 ),
               ),
 
-              const SizedBox(height: 25),
+              const SizedBox(height: 75),
 
-Row(
-  mainAxisAlignment: MainAxisAlignment.center,
-  children: [
-    SizedBox(
-      width: 55,
-      height: 55,
-      child: Image.asset(
-        'lib/images/VK.png',
-        fit: BoxFit.contain,
-      ),
-    ),
-    const SizedBox(width: 25),
-    SizedBox(
-      width: 55,
-      height: 55,
-      child: Image.asset(
-        'lib/images/max.jpg',
-        fit: BoxFit.contain,
-      ),
-    ),
-  ],
-),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 55,
+                    height: 55,
+                    child: Image.asset(
+                      'lib/images/VK.png',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  const SizedBox(width: 25),
+                  SizedBox(
+                    width: 55,
+                    height: 55,
+                    child: Image.asset(
+                      'lib/images/max.jpg',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ],
+              ),
 
 
               Center(
@@ -232,10 +275,14 @@ Row(
                   ),
                 ),
               ),
-            ],
-          ),
+                    ],
+                  ),
+
+                ),
+
         ),
-      ),
-    );
+        ],
+     ),
+     );
   }
 }

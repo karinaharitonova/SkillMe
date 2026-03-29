@@ -112,10 +112,36 @@ class _SignUpPageState extends State<SignUpPage> {
                 ],
               ),
 
-              const SizedBox(height: 40),
+              const SizedBox(height: 50),
 
+                  Center(
+                    child: Text(
+                      'SkillMe',
+                      style: TextStyle(
+                        fontSize: 75,
+                        fontFamily: 'Alana',
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 50),
+
+
+            Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [
+                      Color(0xFFCBDDFD), 
+                      Color(0xFF5D65D6), 
+                    ],
+                    stops: [0.6, 1.0],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(14),
+              ),
               // Поле Email
-              TextFormField(
+              child: TextFormField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
                 validator: (email) =>
@@ -125,7 +151,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 decoration: InputDecoration(
                   hintText: 'Введите Email',
                   filled: true,
-                  fillColor: const Color.fromARGB(221, 212, 239, 252),
+                  fillColor: Colors.transparent,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 18,
@@ -136,21 +162,36 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
               ),
+          ),
 
               const SizedBox(height: 20),
 
+              Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [
+                      Color(0xFFCBDDFD), 
+                      Color(0xFF5D65D6), 
+                    ],
+                    stops: [0.6, 1.0],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(14),
+              ),
+
               // Поле пароля
-              TextFormField(
+              child: TextFormField(
                 controller: passwordController,
                 obscureText: isHiddenPassword,
                 validator: (value) =>
                     value != null && value.length < 6
                         ? 'Минимум 6 символов'
                         : null,
+
+                
                 decoration: InputDecoration(
                   hintText: 'Введите пароль',
-                  filled: true,
-                  fillColor: const Color.fromARGB(221, 212, 239, 252),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 18,
@@ -170,11 +211,27 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
               ),
+              ),
 
               const SizedBox(height: 20),
 
+
+              Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [
+                      Color(0xFFCBDDFD), 
+                      Color(0xFF5D65D6), 
+                    ],
+                    stops: [0.6, 1.0],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(14),
+              ),
+
               // Повтор пароля
-              TextFormField(
+              child: TextFormField(
                 controller: repeatPasswordController,
                 obscureText: isHiddenPassword,
                 validator: (value) =>
@@ -183,8 +240,6 @@ class _SignUpPageState extends State<SignUpPage> {
                         : null,
                 decoration: InputDecoration(
                   hintText: 'Повторите пароль',
-                  filled: true,
-                  fillColor: const Color.fromARGB(221, 212, 239, 252),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 18,
@@ -204,6 +259,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
               ),
+            ),
 
               const SizedBox(height: 30),
 
@@ -213,7 +269,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 height: 55,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 6, 74, 143),
+                    backgroundColor: const Color.fromRGBO(40, 43, 74, 1),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),
@@ -223,7 +279,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     'Зарегистрироваться',
                     style: TextStyle(
                       fontSize: 18,
-                      color: Colors.white,
+                      color: Color.fromRGBO(255, 255, 255, 1),
                     ),
                   ),
                 ),
