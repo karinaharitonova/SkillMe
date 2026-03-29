@@ -33,7 +33,7 @@ class _AccountPageState extends State<AccountPage> {
             Navigator.pop(context);
           },
           icon: const Icon(
-            Icons.arrow_back_ios, // add custom icons also
+            Icons.arrow_back_ios, 
           ),
         ),
         title: const Text('Аккаунт'),

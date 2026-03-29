@@ -69,6 +69,10 @@ flutter:
     - family: GreatVibes
       fonts:
         - asset: lib/fonts/GreatVibes-Regular.ttf
+    
+    - family: Amagro
+      fonts:
+        - asset: lib/fonts/Amagro.ttf
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

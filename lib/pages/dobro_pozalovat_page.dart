@@ -23,7 +23,7 @@ class DobroPozalovatPage extends StatelessWidget {
           ),
 
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 60),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 50),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -48,8 +48,8 @@ class DobroPozalovatPage extends StatelessWidget {
                 const Text(
                   'Добро \nпожаловать!',
                   style: TextStyle(
-                    fontSize: 65,
-                    fontFamily: 'GreatVibes',
+                    fontSize: 44,
+                    fontFamily: 'Amagro',
                     color: Colors.black,
                   ),
                   textAlign: TextAlign.center,
@@ -57,60 +57,58 @@ class DobroPozalovatPage extends StatelessWidget {
 
                 const SizedBox(height: 40),
 
-                // ОПУСКАЕМ КНОПКИ НИЖЕ
                 const Spacer(flex: 3),
 
-                SizedBox(
-                  width: double.infinity,
-                  height: 55,
-                  child: ElevatedButton(
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Color(0xFF064A8F), width: 2),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
+                Center(
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Color(0xFF282B4A), width: 2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
                     ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const LoginPage()),
-                      );
-                    },
-                    child: const Text(
-                      'ВОЙТИ',
-                      style: TextStyle(fontSize: 18,
-                        color: Color(0xFF064A8F),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LoginPage()),
+                    );
+                  },
+                  child: const Text(
+                    'ВХОД',
+                    style: TextStyle(
+                      fontSize: 35,
+                      fontFamily: 'Amagro',
+                      color: Color(0xFF282B4A),
                     ),
                   ),
                 ),
-                ),
+              ),
 
-                const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-                SizedBox(
-                  width: double.infinity,
-                  height: 55,
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Color(0xFF064A8F), width: 2),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
+              Center(
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Color(0xFF282B4A), width: 2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
                     ),
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/signup');
-                    },
-                    child: const Text(
-                      'РЕГИСТРАЦИЯ',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Color(0xFF064A8F),
-                      ),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),    
+                    ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/signup');
+                  },
+                  child: const Text(
+                    'РЕГИСТРАЦИЯ',
+                    style: TextStyle(
+                      fontSize: 35,
+                      fontFamily: 'Amagro',
+                      color: Color(0xFF282B4A),
                     ),
                   ),
                 ),
-
-                const SizedBox(height: 20),
+              ),
               ],
             ),
           ),

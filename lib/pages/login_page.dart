@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:myapp/pages/snack_bar.dart';
 
 
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -69,7 +68,7 @@ class _LoginScreenState extends State<LoginPage> {
       
       resizeToAvoidBottomInset: false,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 60),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 50),
         child: Form(
           key: formKey,
           child: Column(
@@ -84,7 +83,7 @@ class _LoginScreenState extends State<LoginPage> {
         icon: const Icon(Icons.arrow_back),
         color: Colors.black,
         iconSize: 28,
-        onPressed: () => Navigator.pop(context),
+        onPressed: () => Navigator.of(context).pushNamed('/dobro_pozalovat'),
       ),
       const SizedBox(width: 10),
       const Text(

@@ -81,15 +81,25 @@ class _SignUpPageState extends State<SignUpPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
 
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 60),
+      body: Stack(
+        children: [
+
+          Positioned.fill(
+            child: Image.asset(
+              'lib/images/Registr.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+
+      Padding(
+        
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 50),
         child: Form(
           key: formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
-              // Стрелка + заголовок
+              
               Row(
                 children: [
                   IconButton(
@@ -97,22 +107,14 @@ class _SignUpPageState extends State<SignUpPage> {
                     icon: const Icon(Icons.arrow_back),
                     color: Colors.black,
                     iconSize: 28,
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  const SizedBox(width: 10),
-                  const Text(
-                    'РЕГИСТРАЦИЯ',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    onPressed: () => Navigator.pushNamed(context, '/dobro_pozalovat'),
                   ),
                 ],
               ),
 
               const SizedBox(height: 40),
 
-              // Email
+              // Поле Email
               TextFormField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -137,7 +139,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
               const SizedBox(height: 20),
 
-              // Пароль
+              // Поле пароля
               TextFormField(
                 controller: passwordController,
                 obscureText: isHiddenPassword,
@@ -232,7 +234,7 @@ class _SignUpPageState extends State<SignUpPage> {
               // Кнопка "Войти"
               Center(
                 child: GestureDetector(
-                  onTap: () => Navigator.pushNamed(context, '/first'),
+                  onTap: () => Navigator.pushNamed(context, '/login'),
                   child: const Text(
                     'Уже есть аккаунт? Войти',
                     style: TextStyle(
@@ -245,6 +247,8 @@ class _SignUpPageState extends State<SignUpPage> {
             ],
           ),
         ),
+      ),
+        ],
       ),
     );
   }

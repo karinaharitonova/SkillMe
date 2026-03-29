@@ -72,7 +72,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
-              // Стрелка + заголовок
               Row(
                 children: [
                   IconButton(
@@ -95,10 +94,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordPage> {
 
               const SizedBox(height: 40),
 
-              // Поле Email
               TextFormField(
                 controller: emailController,
-                keyboardType: TextInputType.text, // разрешает русский ввод
+                keyboardType: TextInputType.text, 
                 validator: (email) =>
                     email != null && !EmailValidator.validate(email)
                         ? 'Введите корректный Email'

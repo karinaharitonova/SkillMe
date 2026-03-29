@@ -5,6 +5,8 @@ import 'package:myapp/pages/signup_page.dart';
 import 'package:myapp/pages/reset_password_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:myapp/pages/login_page.dart';
+import 'package:myapp/pages/dobro_pozalovat_page.dart';
 
 
 Future <void> main() async {
@@ -31,6 +33,8 @@ class MyApp extends StatelessWidget {
         '/home': (context) => HomePage(),
         '/signup': (context) => const SignUpPage(),
         '/reset_password': (context) => const ResetPasswordPage(),
+        '/login': (context) => const LoginPage(),
+        '/dobro_pozalovat': (context) => const DobroPozalovatPage(),
       },
     );
   }
