@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:myapp/pages/profile_page.dart';
+import 'package:myapp/pages/nickname_page.dart';
 import 'package:myapp/pages/snack_bar.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -78,7 +78,7 @@ class _EmailPageState extends State<EmailPage> {
 
   @override
   Widget build(BuildContext context) => isEmailVerified
-      ? const ProfilePage()
+      ? const NicknamePage()
       : Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: AppBar(

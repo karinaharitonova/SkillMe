@@ -19,7 +19,7 @@ class HomePage extends StatelessWidget {
 
             // Поисковая строка
             Container(
-              height: 50,
+              height: 43,
               decoration: BoxDecoration(
                 color: const Color.fromARGB(221, 212, 239, 252),
                 borderRadius: BorderRadius.circular(14),

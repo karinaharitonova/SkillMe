@@ -17,7 +17,7 @@ class DobroPozalovatPage extends StatelessWidget {
 
           Positioned.fill(
             child: Image.asset(
-              'lib/images/A4 - 1.png',
+              'lib/assets/images/A4 - 1.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -48,7 +48,7 @@ class DobroPozalovatPage extends StatelessWidget {
                 const Text(
                   'Добро \nпожаловать!',
                   style: TextStyle(
-                    fontSize: 44,
+                    fontSize: 40,
                     fontFamily: 'Amagro',
                     color: Colors.black,
                   ),

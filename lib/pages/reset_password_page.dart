@@ -64,82 +64,98 @@ class _ResetPasswordScreenState extends State<ResetPasswordPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
 
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 60),
-        child: Form(
-          key: formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-
-              Row(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            child: Form(
+              key: formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  IconButton(
-                    padding: EdgeInsets.zero,
-                    icon: const Icon(Icons.arrow_back),
-                    color: Colors.black,
-                    iconSize: 28,
-                    onPressed: () => Navigator.pop(context),
+
+                  Row(
+                    children: [
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        icon: const Icon(Icons.arrow_back),
+                        color: Colors.black,
+                        iconSize: 28,
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      const SizedBox(width: 10),
+                      const Text(
+                        'СБРОС ПАРОЛЯ',
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 10),
-                  const Text(
-                    'СБРОС ПАРОЛЯ',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+
+                  const SizedBox(height: 40),
+
+                  Container(
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFFCBDDFD),
+                              Color(0xFF5D65D6),
+                            ],
+                            stops: [0.6, 1.0],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: TextFormField(
+                          controller: emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (email) =>
+                              email != null && !EmailValidator.validate(email)
+                                  ? 'Введите корректный Email'
+                                  : null,
+                          decoration: InputDecoration(
+                            hintText: 'Введите Email',
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 18,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                  const SizedBox(height: 30),
+
+                  SizedBox(
+                        width: double.infinity,
+                        height: 55,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromRGBO(40, 43, 74, 1),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          onPressed: resetPassword,
+                          child: const Text(
+                            'Сбросить пароль',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Color.fromARGB(255, 0, 0, 0),
+                            ),
+                          ),
+                        ),
+                      ),
+
                 ],
               ),
-
-              const SizedBox(height: 40),
-
-              TextFormField(
-                controller: emailController,
-                keyboardType: TextInputType.text, 
-                validator: (email) =>
-                    email != null && !EmailValidator.validate(email)
-                        ? 'Введите корректный Email'
-                        : null,
-                decoration: InputDecoration(
-                  hintText: 'Введите Email',
-                  filled: true,
-                  fillColor: const Color.fromARGB(221, 212, 239, 252),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 18,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 30),
-
-              // Кнопка сброса
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 6, 74, 143),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  onPressed: resetPassword,
-                  child: const Text(
-                    'Сбросить пароль',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

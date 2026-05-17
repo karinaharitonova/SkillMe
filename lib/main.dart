@@ -7,7 +7,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:myapp/pages/login_page.dart';
 import 'package:myapp/pages/dobro_pozalovat_page.dart';
-
+import 'package:myapp/pages/categories_page.dart';
+import 'package:myapp/pages/edit_profile_page.dart';
+import 'package:myapp/pages/following_page.dart';
+import 'package:myapp/pages/profile_page.dart';
+import 'package:myapp/pages/account_page.dart';
+import 'package:myapp/pages/nickname_page.dart';
 
 Future <void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +40,12 @@ class MyApp extends StatelessWidget {
         '/reset_password': (context) => const ResetPasswordPage(),
         '/login': (context) => const LoginPage(),
         '/dobro_pozalovat': (context) => const DobroPozalovatPage(),
+        '/categories': (context) => const CategoriesPage(),
+        '/edit-profile': (context) => const EditProfilePage(),
+        '/following': (context) => const FollowingPage(),
+        '/create-profile': (context) => const NicknamePage(),
+        '/account': (context) => const AccountPage(),
+        '/nickname': (context) => const NicknamePage(),
       },
     );
   }

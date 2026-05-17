@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/pages/account_page.dart';
-import 'package:myapp/pages/categories_page.dart';
-import 'package:myapp/pages/favorite_page.dart';
-import 'package:myapp/pages/home_page.dart';
+import 'home_page.dart';
+import 'categories_page.dart';
+import 'favorite_page.dart';
+import 'account_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:myapp/pages/dobro_pozalovat_page.dart';
-
-final apiKey = dotenv.env['API_KEY'];
-
-
+import 'dobro_pozalovat_page.dart';
 
 class FirstPage extends StatefulWidget {
   const FirstPage({super.key});
@@ -17,67 +12,47 @@ class FirstPage extends StatefulWidget {
   @override
   State<FirstPage> createState() => _FirstPageState();
 }
+
 class _FirstPageState extends State<FirstPage> {
- int _selectedIndex = 0;
+  int currentIndex = 0;
 
-
-final List _pages = [HomePage(),CategoriesPage(),FavoritePage(),AccountPage()];
   @override
   Widget build(BuildContext context) {
-    // различный фон в зависимости от выбранной вкладки
-    Color background;
-    switch (_selectedIndex) {
-      case 0:
-        background = const Color(0xFFF5F5F7);
-        break;
-      case 1:
-        background = Colors.green.shade50;
-        break;
-      case 2:
-        background = Colors.purple.shade50;
-        break;
+    final user = FirebaseAuth.instance.currentUser;
 
-      default:
-        background = Colors.white;
-    }
+    final pages = [
+      const HomePage(),
+      const CategoriesPage(),
+      const FavoritePage(),
+
+      // если пользователь НЕ авторизован → Добро пожаловать
+      user == null
+          ? const DobroPozalovatPage()
+          : const AccountPage(),
+    ];
 
     return Scaffold(
-      backgroundColor: background,
-      body: _pages[_selectedIndex],
+      body: pages[currentIndex],
+
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.shifting,
-        iconSize: 32.0,
-        currentIndex: _selectedIndex,
-        selectedItemColor: const Color(0xFF4A90E2),
-        unselectedItemColor: const Color(0xFFBDBDBD),
+        currentIndex: currentIndex,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: const Color.fromARGB(255, 148, 137, 137),
+        backgroundColor: Colors.black,
+        iconSize: 30,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+
         onTap: (index) {
-  final user = FirebaseAuth.instance.currentUser;
+          setState(() => currentIndex = index);
+        },
 
-  if (index == 3) {
-    if (user == null) {
-      // Пользователь НЕ вошёл → показываем страницу "Добро пожаловать"
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const DobroPozalovatPage()),
-      );
-    } else {
-      // Пользователь вошёл → открываем профиль
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const AccountPage()),
-      );
-    }
-  } else {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-},
-
-        items: const [BottomNavigationBarItem(icon: Icon(Icons.home),label: ''),
-          BottomNavigationBarItem(icon:Icon(Icons.category),label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite),label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.person),label: '')],
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.grid_view), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
+        ],
       ),
     );
   }

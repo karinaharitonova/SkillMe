@@ -62,227 +62,218 @@ class _LoginScreenState extends State<LoginPage> {
     navigator.pushNamedAndRemoveUntil('/first', (Route<dynamic> route) => false);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      
-      resizeToAvoidBottomInset: false,
+ @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    resizeToAvoidBottomInset: true, // важно!
 
-      body: Stack(
-        children: [
+    body: Stack(
+      children: [
 
-          Positioned.fill(
-            child: Image.asset(
-              'lib/images/Registr.png',
-              fit: BoxFit.cover,
-            ),
+        Positioned.fill(
+          child: Image.asset(
+            'lib/assets/images/Registr.png',
+            fit: BoxFit.cover,
           ),
+        ),
 
+        SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+              child: Form(
+                key: formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
 
-            Padding(
+                    IconButton(
+                      padding: EdgeInsets.zero,
+                      icon: const Icon(Icons.arrow_back),
+                      color: Colors.black,
+                      iconSize: 28,
+                      onPressed: () => Navigator.of(context).pushNamed('/dobro_pozalovat'),
+                    ),
 
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 50),
-                child: Form(
-                  key: formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    const SizedBox(height: 40),
 
-                        Row(
-                          children: [
-                        IconButton(
-                          padding: EdgeInsets.zero, 
-                          icon: const Icon(Icons.arrow_back),
+                    Center(
+                      child: Text(
+                        'SkillMe',
+                        style: TextStyle(
+                          fontSize: 75,
+                          fontFamily: 'Alana',
                           color: Colors.black,
-                          iconSize: 28,
-                          onPressed: () => Navigator.of(context).pushNamed('/dobro_pozalovat'),
                         ),
-                      ],
-                   ),
-
-
-              const SizedBox(height: 40),
-
-              Center(
-                    child: Text(
-                      'SkillMe',
-                      style: TextStyle(
-                        fontSize: 75,
-                        fontFamily: 'Alana',
-                        color: Colors.black,
                       ),
                     ),
-                  ),
 
-                  const SizedBox(height: 50),
+                    const SizedBox(height: 50),
 
-
-              Container(
-                decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                      Color(0xFFCBDDFD), 
-                      Color(0xFF5D65D6), 
-                    ],
-                    stops: [0.6, 1.0],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius:BorderRadius.all(Radius.circular(14)),
-              ),
-
-                child: TextFormField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                validator: (email) => 
-                    email != null && !EmailValidator.validate(email)
-                        ? 'Введите корректный Email'
-                        : null,
-                decoration: InputDecoration(
-                  hintText: 'Введите Email',
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 18,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-                ),
-
-              const SizedBox(height: 20),
-
-              Container(
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [
-                      Color(0xFFCBDDFD), 
-                      Color(0xFF5D65D6), 
-                    ],
-                    stops: [0.6, 1.0],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(14),
-              ),
-
-              child:TextFormField(
-                controller: passwordController,
-                obscureText: isHiddenPassword,
-                validator: (value) =>
-                    value != null && value.length < 6
-                        ? 'Минимум 6 символов'
-                        : null,
-                decoration: InputDecoration(
-                  hintText: 'Введите пароль',
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 18,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide.none,
-                  ),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      isHiddenPassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                      color: Colors.black,
+                    // EMAIL
+                    Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Color(0xFFCBDDFD),
+                            Color(0xFF5D65D6),
+                          ],
+                          stops: [0.6, 1.0],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(14)),
+                      ),
+                      child: TextFormField(
+                        controller: emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (email) =>
+                            email != null && !EmailValidator.validate(email)
+                                ? 'Введите корректный Email'
+                                : null,
+                        decoration: InputDecoration(
+                          hintText: 'Введите Email',
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 18,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                      ),
                     ),
-                    onPressed: () {
-                      setState(() => isHiddenPassword = !isHiddenPassword);
-                    },
-                  ),
+
+                    const SizedBox(height: 20),
+
+                    // PASSWORD
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color(0xFFCBDDFD),
+                            Color(0xFF5D65D6),
+                          ],
+                          stops: [0.6, 1.0],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: TextFormField(
+                        controller: passwordController,
+                        obscureText: isHiddenPassword,
+                        validator: (value) =>
+                            value != null && value.length < 6
+                                ? 'Минимум 6 символов'
+                                : null,
+                        decoration: InputDecoration(
+                          hintText: 'Введите пароль',
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 18,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide.none,
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              isHiddenPassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: Colors.black,
+                            ),
+                            onPressed: () {
+                              setState(() => isHiddenPassword = !isHiddenPassword);
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 30),
+
+                    // LOGIN BUTTON
+                    SizedBox(
+                      width: double.infinity,
+                      height: 55,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromRGBO(40, 43, 74, 1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        onPressed: login,
+                        child: const Text(
+                          'Войти',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Color.fromARGB(235, 255, 255, 255),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 55),
+
+                    // SOCIALS
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(width: 25),
+                        SizedBox(
+                          width: 55,
+                          height: 55,
+                          child: Image.asset(
+                            'lib/assets/images/Yandex.png',
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    Center(
+                      child: TextButton(
+                        onPressed: () =>
+                            Navigator.of(context).pushNamed('/reset_password'),
+                        child: const Text(
+                          'Сбросить пароль',
+                          style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 15),
+
+                    Center(
+                      child: GestureDetector(
+                        onTap: () =>
+                            Navigator.of(context).pushNamed('/signup'),
+                        child: const Text(
+                          'Еще нет аккаунта? Регистрация',
+                          style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+                  ],
                 ),
               ),
             ),
-
-              const SizedBox(height: 30),
-
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(40, 43, 74, 1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  onPressed: login,
-                  child: const Text(
-                    'Войти',
-                    style: TextStyle(fontSize: 18, color: Color.fromARGB(235, 255, 255, 255)),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 75),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 55,
-                    height: 55,
-                    child: Image.asset(
-                      'lib/images/VK.png',
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                  const SizedBox(width: 25),
-                  SizedBox(
-                    width: 55,
-                    height: 55,
-                    child: Image.asset(
-                      'lib/images/max.jpg',
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ],
-              ),
-
-
-              Center(
-                child: TextButton(
-                  onPressed: () =>
-                      Navigator.of(context).pushNamed('/reset_password'),
-                  child: const Text(
-                    'Сбросить пароль',
-                    style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              Center(
-                child: GestureDetector(
-                  onTap: () =>
-                      Navigator.of(context).pushNamed('/signup'),
-                  child: const Text(
-                    'Еще нет аккаунта? Регистрация',
-                    style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ),
-                    ],
-                  ),
-
-                ),
-
+          ),
         ),
-        ],
-     ),
-     );
-  }
+      ],
+    ),
+  );
+}
 }
