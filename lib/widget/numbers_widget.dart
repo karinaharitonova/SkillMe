@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/pages/following_page.dart';
 
 class NumbersWidget extends StatelessWidget {
   @override

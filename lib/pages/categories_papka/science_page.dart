@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/pages/categories_page.dart';
 
 class SciencePage extends StatelessWidget {
   const SciencePage({super.key});

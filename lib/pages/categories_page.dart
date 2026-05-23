@@ -1,13 +1,38 @@
 import 'package:flutter/material.dart';
-import 'categories_papka/business_page.dart';
-import 'categories_papka/cooking_page.dart';
-import 'categories_papka/design_page.dart';
-import 'categories_papka/education_page.dart';
-import 'categories_papka/games_page.dart';
-import 'categories_papka/music_page.dart';
-import 'categories_papka/science_page.dart';
-import 'categories_papka/sport_page.dart';
+import 'videos_by_category_page.dart';
 
+// ─────────────────────────────────────────────
+// МОДЕЛЬ КАТЕГОРИИ
+// ─────────────────────────────────────────────
+class CategoryModel {
+  final String id;
+  final String name;
+  final IconData icon;
+
+  CategoryModel({
+    required this.id,
+    required this.name,
+    required this.icon,
+  });
+}
+
+// ─────────────────────────────────────────────
+// СПИСОК КАТЕГОРИЙ
+// ─────────────────────────────────────────────
+final categories = [
+  CategoryModel(id: 'music', name: 'Музыка', icon: Icons.music_note),
+  CategoryModel(id: 'education', name: 'Образование', icon: Icons.school),
+  CategoryModel(id: 'games', name: 'Игры', icon: Icons.sports_esports),
+  CategoryModel(id: 'cooking', name: 'Кулинария', icon: Icons.restaurant),
+  CategoryModel(id: 'design', name: 'Дизайн', icon: Icons.design_services),
+  CategoryModel(id: 'sport', name: 'Спорт', icon: Icons.sports),
+  CategoryModel(id: 'science', name: 'Наука', icon: Icons.science),
+  CategoryModel(id: 'business', name: 'Бизнес', icon: Icons.business_center),
+];
+
+// ─────────────────────────────────────────────
+// СТРАНИЦА КАТЕГОРИЙ
+// ─────────────────────────────────────────────
 class CategoriesPage extends StatelessWidget {
   const CategoriesPage({super.key});
 
@@ -32,74 +57,59 @@ class CategoriesPage extends StatelessWidget {
 
               const SizedBox(height: 20),
 
-
-              const SizedBox(height: 20),
-
               Expanded(
-                child: GridView.count(
+                child: GridView.builder(
                   padding: EdgeInsets.zero,
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 20,
-                  crossAxisSpacing: 20,
-                  children: const [
-                    CategoryItem(icon: Icons.music_note, label: 'Музыка', page: MusicPage()),
-                    CategoryItem(icon: Icons.school, label: 'Образование', page: EducationPage()),
-                    CategoryItem(icon: Icons.sports_esports, label: 'Игры', page: GamesPage()),
-                    CategoryItem(icon: Icons.restaurant, label: 'Кулинария', page: CookingPage()),
-                    CategoryItem(icon: Icons.design_services, label: 'Дизайн', page: DesignPage()),
-                    CategoryItem(icon: Icons.sports, label: 'Спорт', page: SportPage()),
-                    CategoryItem(icon: Icons.science, label: 'Наука', page: SciencePage()),
-                    CategoryItem(icon: Icons.business_center, label: 'Бизнес', page: BusinessPage()),
-                  ],
+                  itemCount: categories.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 20,
+                    crossAxisSpacing: 20,
+                  ),
+                  itemBuilder: (context, index) {
+                    final category = categories[index];
+
+                    return InkWell(
+                      borderRadius: BorderRadius.circular(50),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => VideosByCategoryPage(
+  categoryId: category.id,
+  categoryTitle: category.name,
+)
+                          ),
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          Container(
+                            height: 80,
+                            width: 80,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFEDE7F6),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(category.icon, size: 40, color: Colors.black),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            category.name,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class CategoryItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Widget page;
-
-  const CategoryItem({
-    required this.icon,
-    required this.label,
-    required this.page,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(50),
-      onTap: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => page),
-  );
-},
-      child: Column(
-        children: [
-          Container(
-            height: 80,
-            width: 80,
-            decoration: const BoxDecoration(
-              color: Color(0xFFEDE7F6),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, size: 40, color: Colors.black),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-          ),
-        ],
       ),
     );
   }

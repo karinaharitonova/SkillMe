@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/pages/categories_page.dart';
 
 class SportPage extends StatelessWidget {
   const SportPage({super.key});
