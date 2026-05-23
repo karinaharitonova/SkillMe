@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'videos_by_category_page.dart';
 
-// ─────────────────────────────────────────────
-// МОДЕЛЬ КАТЕГОРИИ
-// ─────────────────────────────────────────────
 class CategoryModel {
   final String id;
   final String name;
@@ -16,9 +13,6 @@ class CategoryModel {
   });
 }
 
-// ─────────────────────────────────────────────
-// СПИСОК КАТЕГОРИЙ
-// ─────────────────────────────────────────────
 final categories = [
   CategoryModel(id: 'music', name: 'Музыка', icon: Icons.music_note),
   CategoryModel(id: 'education', name: 'Образование', icon: Icons.school),
@@ -30,9 +24,6 @@ final categories = [
   CategoryModel(id: 'business', name: 'Бизнес', icon: Icons.business_center),
 ];
 
-// ─────────────────────────────────────────────
-// СТРАНИЦА КАТЕГОРИЙ
-// ─────────────────────────────────────────────
 class CategoriesPage extends StatelessWidget {
   const CategoriesPage({super.key});
 
