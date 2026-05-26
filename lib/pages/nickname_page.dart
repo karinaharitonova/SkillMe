@@ -11,7 +11,7 @@ class NicknamePage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        automaticallyImplyLeading: false, // убираем левую иконку
+        automaticallyImplyLeading: false, 
         actions: [
           TextButton(
             onPressed: () {

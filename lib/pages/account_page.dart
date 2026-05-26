@@ -42,10 +42,6 @@ class _AccountPageState extends State<AccountPage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text(style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-              ),'АККАУНТ'),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -75,19 +71,33 @@ class _AccountPageState extends State<AccountPage> {
           ),
 
           const SizedBox(height: 20),
-          Center(
-            child: ButtonWidget(
-              text: 'Редактировать',
-              onClicked: () {
-                Navigator.pushNamed(context, '/edit-profile');
-              },
-            ),
-          ),
 
-          const SizedBox(height: 20),
-          NumbersWidget(),
-          const SizedBox(height: 40),
-          _buildAbout(user),
+// ⭐ Кнопка Настройки
+const SizedBox(height: 160),
+Center(
+  child: SizedBox(
+    width: 200,
+    height: 50,
+    child: ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Color(0xFF064A8F),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
+      ),
+      onPressed: () {
+        Navigator.pushNamed(context, '/settings');
+      },
+      child: const Text(
+        'Настройки',
+        style: TextStyle(
+          fontSize: 18,
+          color: Colors.white,
+        ),
+      ),
+    ),
+  ),
+),
         ],
       ),
     );
@@ -101,23 +111,5 @@ class _AccountPageState extends State<AccountPage> {
           ),
           const SizedBox(height: 4),
         ],
-      );
-
-  Widget _buildAbout(Profile user) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 40),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'О себе',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              user.about,
-              style: const TextStyle(fontSize: 16, height: 1.4),
-            ),
-          ],
-        ),
       );
 }

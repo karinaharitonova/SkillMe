@@ -2,62 +2,78 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/pages/snack_bar.dart';
-import 'package:myapp/services/yandex_auth.dart'; 
+import 'package:myapp/pages/registration/email_page.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+final apiKey = dotenv.env['API_KEY'];
+
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginScreenState();
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _LoginScreenState extends State<LoginPage> {
+class _SignUpPageState extends State<SignUpPage> {
   bool isHiddenPassword = true;
+
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final repeatPasswordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
-
-  int currentIndex = 0;
 
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
+    repeatPasswordController.dispose();
     super.dispose();
   }
 
-  Future<void> login() async {
+  void togglePasswordView() {
+    setState(() => isHiddenPassword = !isHiddenPassword);
+  }
+
+  Future<void> signUp() async {
     final navigator = Navigator.of(context);
 
-    final isValid = formKey.currentState!.validate();
-    if (!isValid) return;
+    if (!formKey.currentState!.validate()) return;
+
+    if (passwordController.text.trim() != repeatPasswordController.text.trim()) {
+      SnackBarService.showSnackBar(
+        context,
+        'Пароли должны совпадать',
+        true,
+      );
+      return;
+    }
 
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
     } on FirebaseAuthException catch (e) {
-      print(e.code);
-
-      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+      if (e.code == 'email-already-in-use') {
         SnackBarService.showSnackBar(
           context,
-          'Неправильный email или пароль. Повторите попытку',
+          'Такой Email уже используется',
           true,
         );
         return;
       } else {
         SnackBarService.showSnackBar(
           context,
-          'Неизвестная ошибка! Попробуйте еще раз или обратитесь в поддержку.',
+          'Ошибка! Попробуйте снова.',
           true,
         );
         return;
       }
     }
 
-    navigator.pushNamedAndRemoveUntil('/first', (Route<dynamic> route) => false);
+    navigator.pushReplacement(
+      MaterialPageRoute(builder: (_) => const EmailPage()),
+    );
   }
 
   @override
@@ -90,7 +106,7 @@ class _LoginScreenState extends State<LoginPage> {
                         icon: const Icon(Icons.arrow_back),
                         color: Colors.black,
                         iconSize: 28,
-                        onPressed: () => Navigator.of(context).pushNamed('/dobro_pozalovat'),
+                        onPressed: () => Navigator.pushNamed(context, '/dobro_pozalovat'),
                       ),
 
                       const SizedBox(height: 40),
@@ -110,8 +126,8 @@ class _LoginScreenState extends State<LoginPage> {
 
                       // EMAIL
                       Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
                             colors: [
                               Color(0xFFCBDDFD),
                               Color(0xFF5D65D6),
@@ -120,7 +136,7 @@ class _LoginScreenState extends State<LoginPage> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          borderRadius: BorderRadius.all(Radius.circular(14)),
+                          borderRadius: BorderRadius.circular(14),
                         ),
                         child: TextFormField(
                           controller: emailController,
@@ -183,9 +199,53 @@ class _LoginScreenState extends State<LoginPage> {
                                     : Icons.visibility,
                                 color: Colors.black,
                               ),
-                              onPressed: () {
-                                setState(() => isHiddenPassword = !isHiddenPassword);
-                              },
+                              onPressed: togglePasswordView,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // REPEAT PASSWORD
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFFCBDDFD),
+                              Color(0xFF5D65D6),
+                            ],
+                            stops: [0.6, 1.0],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: TextFormField(
+                          controller: repeatPasswordController,
+                          obscureText: isHiddenPassword,
+                          validator: (value) =>
+                              value != null && value.length < 6
+                                  ? 'Минимум 6 символов'
+                                  : null,
+                          decoration: InputDecoration(
+                            hintText: 'Повторите пароль',
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 18,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: BorderSide.none,
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                isHiddenPassword
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: Colors.black,
+                              ),
+                              onPressed: togglePasswordView,
                             ),
                           ),
                         ),
@@ -193,7 +253,7 @@ class _LoginScreenState extends State<LoginPage> {
 
                       const SizedBox(height: 30),
 
-                      // LOGIN BUTTON
+                      // SIGN UP BUTTON
                       SizedBox(
                         width: double.infinity,
                         height: 55,
@@ -204,70 +264,24 @@ class _LoginScreenState extends State<LoginPage> {
                               borderRadius: BorderRadius.circular(14),
                             ),
                           ),
-                          onPressed: login,
+                          onPressed: signUp,
                           child: const Text(
-                            'Войти',
+                            'Зарегистрироваться',
                             style: TextStyle(
                               fontSize: 18,
-                              color: Color.fromARGB(235, 255, 255, 255),
+                              color: Colors.white,
                             ),
                           ),
                         ),
                       ),
 
-                      const SizedBox(height: 55),
-
-                      // SOCIALS — Яндекс
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          GestureDetector(
-                            onTap: () async {
-                              final result = await YandexAuth.signIn();
-                              print(result);
-
-                              if (result != null) {
-                                Navigator.pushNamedAndRemoveUntil(
-                                  context,
-                                  '/first',
-                                  (route) => false,
-                                );
-                              }
-                            },
-                            child: SizedBox(
-                              width: 55,
-                              height: 55,
-                              child: Image.asset(
-                                'lib/assets/images/Yandex.png',
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      Center(
-                        child: TextButton(
-                          onPressed: () =>
-                              Navigator.of(context).pushNamed('/reset_password'),
-                          child: const Text(
-                            'Сбросить пароль',
-                            style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 15),
+                      const SizedBox(height: 20),
 
                       Center(
                         child: GestureDetector(
-                          onTap: () =>
-                              Navigator.of(context).pushNamed('/signup'),
+                          onTap: () => Navigator.pushNamed(context, '/login'),
                           child: const Text(
-                            'Еще нет аккаунта? Регистрация',
+                            'Уже есть аккаунт? Войти',
                             style: TextStyle(
                               decoration: TextDecoration.underline,
                               color: Colors.black,

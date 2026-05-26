@@ -20,19 +20,22 @@ class _FirstPageState extends State<FirstPage> {
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
 
-    final pages = [
+    final pages = <Widget>[
       const HomePage(),
       const CategoriesPage(),
       const FavoritePage(),
-
-      // если пользователь НЕ авторизован → Добро пожаловать
-      user == null
-          ? const DobroPozalovatPage()
-          : const AccountPage(),
+      user == null ? const DobroPozalovatPage() : const AccountPage(),
     ];
 
     return Scaffold(
-      body: pages[currentIndex],
+      // Позволяет телу экрана заходить под BottomNavigationBar (убирает видимый "прямоугольник")
+      extendBody: true,
+
+      // IndexedStack держит все страницы в дереве и не пересоздаёт их при переключении
+      body: IndexedStack(
+        index: currentIndex,
+        children: pages,
+      ),
 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
@@ -42,11 +45,7 @@ class _FirstPageState extends State<FirstPage> {
         iconSize: 30,
         showSelectedLabels: false,
         showUnselectedLabels: false,
-
-        onTap: (index) {
-          setState(() => currentIndex = index);
-        },
-
+        onTap: (index) => setState(() => currentIndex = index),
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.grid_view), label: ''),

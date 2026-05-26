@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:myapp/pages/login_page.dart';
+import 'package:myapp/pages/registration/login_page.dart';
 
 final apiKey = dotenv.env['API_KEY'];
 
