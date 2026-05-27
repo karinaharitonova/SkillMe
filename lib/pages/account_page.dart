@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:myapp/model/profile.dart';
 import 'package:myapp/utils/user_preferences.dart';
 import 'package:myapp/widget/profile_widget.dart';
-import 'package:myapp/widget/numbers_widget.dart';
 import 'package:myapp/widget/buttom_widget.dart';
 
 class AccountPage extends StatefulWidget {
@@ -72,32 +71,55 @@ class _AccountPageState extends State<AccountPage> {
 
           const SizedBox(height: 20),
 
-// ⭐ Кнопка Настройки
-const SizedBox(height: 160),
-Center(
-  child: SizedBox(
-    width: 200,
-    height: 50,
-    child: ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFF064A8F),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
-      ),
-      onPressed: () {
-        Navigator.pushNamed(context, '/settings');
-      },
-      child: const Text(
-        'Настройки',
-        style: TextStyle(
-          fontSize: 18,
-          color: Colors.white,
-        ),
-      ),
-    ),
-  ),
-),
+          const SizedBox(height: 160),
+
+          Center(
+            child: SizedBox(
+              width: 200,
+              height: 50,
+              child: Material(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(14),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(14),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/settings');
+                  },
+                  child: Ink(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color(0xFFCBDDFD),
+                          Color(0xFF5D65D6),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.12),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Настройки',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // 
         ],
       ),
     );

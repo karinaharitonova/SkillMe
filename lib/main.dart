@@ -17,7 +17,6 @@ import 'package:myapp/pages/registration/login_page.dart';
 import 'package:myapp/pages/dobro_pozalovat_page.dart';
 import 'package:myapp/pages/categories_page.dart';
 import 'package:myapp/pages/edit_profile_page.dart';
-import 'package:myapp/pages/following_page.dart';
 import 'package:myapp/pages/account_page.dart';
 import 'package:myapp/pages/nickname_page.dart';
 import 'package:myapp/pages/settings_page.dart';
@@ -116,7 +115,6 @@ class MyApp extends StatelessWidget {
         '/dobro_pozalovat': (context) => const DobroPozalovatPage(),
         '/categories': (context) => const CategoriesPage(),
         '/edit-profile': (context) => const EditProfilePage(),
-        '/following': (context) => const FollowingPage(),
         '/create-profile': (context) => const NicknamePage(),
         '/account': (context) => const AccountPage(),
         '/nickname': (context) => const NicknamePage(),

@@ -12,7 +12,9 @@ class ProfileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme.primary;
+    // Можно заменить на Theme.of(context).colorScheme.primary и т.д.
+    const Color gradStart = Color(0xFFCBDDFD);
+    const Color gradEnd = Color(0xFF5D65D6);
 
     return Center(
       child: Stack(
@@ -21,7 +23,7 @@ class ProfileWidget extends StatelessWidget {
           Positioned(
             bottom: 0,
             right: 4,
-            child: buildEditIcon(color),
+            child: buildEditIcon(gradStart, gradEnd),
           ),
         ],
       ),
@@ -29,32 +31,72 @@ class ProfileWidget extends StatelessWidget {
   }
 
   Widget buildImage() {
-    final image = NetworkImage(imagePath);
+    final hasImage = imagePath.isNotEmpty;
+    final imageProvider = hasImage ? NetworkImage(imagePath) : null;
 
     return ClipOval(
       child: Material(
         color: Colors.transparent,
-        child: Ink.image(
-          image: image,
-          fit: BoxFit.cover,
+        child: Ink(
           width: 128,
           height: 128,
-          child: InkWell(onTap: onClicked),
+          decoration: BoxDecoration(
+            color: hasImage ? Colors.transparent : const Color(0xFFEDE7F6),
+            shape: BoxShape.circle,
+            image: hasImage
+                ? DecorationImage(image: imageProvider as ImageProvider, fit: BoxFit.cover)
+                : null,
+          ),
+          child: InkWell(
+            onTap: onClicked,
+            customBorder: const CircleBorder(),
+            child: hasImage
+                ? null
+                : const Center(
+                    child: Icon(Icons.person, size: 56, color: Colors.black54),
+                  ),
+          ),
         ),
       ),
     );
   }
 
-  Widget buildEditIcon(Color color) => buildCircle(
+  Widget buildEditIcon(Color gradStart, Color gradEnd) => buildCircle(
         color: Colors.white,
         all: 3,
-        child: buildCircle(
-          color: color,
-          all: 8,
-          child: Icon(
-            Icons.edit,
-            color: Colors.white,
-            size: 20,
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            // УБРАЛИ const перед LinearGradient, чтобы можно было использовать переменные
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [gradStart, gradEnd],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.12),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onClicked,
+              customBorder: const CircleBorder(),
+              child: const SizedBox(
+                width: 20,
+                height: 20,
+                child: Icon(
+                  Icons.edit,
+                  color: Colors.white,
+                  size: 16,
+                ),
+              ),
+            ),
           ),
         ),
       );

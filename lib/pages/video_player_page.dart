@@ -25,15 +25,17 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   @override
   void initState() {
     super.initState();
-_controller.addListener(() {
-  if (mounted) setState(() {});
-});
 
     _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl))
       ..initialize().then((_) {
-        setState(() => _isReady = true);
+        _controller.setLooping(true);
         _controller.play();
+        setState(() => _isReady = true);
       });
+
+    _controller.addListener(() {
+      if (mounted) setState(() {});
+    });
   }
 
   @override
@@ -46,6 +48,13 @@ _controller.addListener(() {
     setState(() => _showUI = !_showUI);
   }
 
+  String _formatTime(Duration d) {
+    String two(int n) => n.toString().padLeft(2, '0');
+    final minutes = two(d.inMinutes.remainder(60));
+    final seconds = two(d.inSeconds.remainder(60));
+    return "$minutes:$seconds";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,7 +62,6 @@ _controller.addListener(() {
 
       body: Stack(
         children: [
-          // ⭐ Само видео
           GestureDetector(
             onTap: toggleUI,
             child: Center(
@@ -66,7 +74,7 @@ _controller.addListener(() {
             ),
           ),
 
-          // ⭐ Верхний градиент
+          // Верхний градиент
           if (_showUI)
             Container(
               height: 200,
@@ -82,7 +90,7 @@ _controller.addListener(() {
               ),
             ),
 
-          // ⭐ Нижний градиент
+          // Нижний градиент
           if (_showUI)
             Align(
               alignment: Alignment.bottomCenter,
@@ -101,7 +109,7 @@ _controller.addListener(() {
               ),
             ),
 
-          // ⭐ Кнопка назад
+          // Кнопка назад
           if (_showUI)
             Positioned(
               top: 40,
@@ -116,7 +124,45 @@ _controller.addListener(() {
             ),
 
 
-          // ⭐ Название и категория
+          // Ползунок перемотки
+          if (_showUI && _isReady)
+            Positioned(
+              left: 20,
+              right: 20,
+              bottom: 100,
+              child: Column(
+                children: [
+                  Slider(
+                    activeColor: Colors.white,
+                    inactiveColor: Colors.white30,
+                    value: _controller.value.position.inSeconds
+                        .toDouble()
+                        .clamp(0, _controller.value.duration.inSeconds.toDouble()),
+                    min: 0,
+                    max: _controller.value.duration.inSeconds.toDouble(),
+                    onChanged: (value) {
+                      _controller.seekTo(Duration(seconds: value.toInt()));
+                    },
+                  ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        _formatTime(_controller.value.position),
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                      Text(
+                        _formatTime(_controller.value.duration),
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+          // Название и категория
           if (_showUI)
             Positioned(
               left: 20,
@@ -150,44 +196,8 @@ _controller.addListener(() {
                 ],
               ),
             ),
-// ⭐ Ползунок перемотки
-if (_showUI && _isReady)
-  Positioned(
-    left: 20,
-    right: 20,
-    bottom: 100,
-    child: Column(
-      children: [
-        Slider(
-          activeColor: Colors.white,
-          inactiveColor: Colors.white30,
-          value: _controller.value.position.inSeconds.toDouble(),
-          min: 0,
-          max: _controller.value.duration.inSeconds.toDouble(),
-          onChanged: (value) {
-            _controller.seekTo(Duration(seconds: value.toInt()));
-          },
-        ),
 
-        // Текст времени
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              _formatTime(_controller.value.position),
-              style: const TextStyle(color: Colors.white70),
-            ),
-            Text(
-              _formatTime(_controller.value.duration),
-              style: const TextStyle(color: Colors.white70),
-            ),
-          ],
-        ),
-      ],
-    ),
-  ),
-
-          // ⭐ Кнопка Play/Pause по центру
+          // Play / Pause
           if (_showUI && _isReady)
             Center(
               child: IconButton(
@@ -211,11 +221,4 @@ if (_showUI && _isReady)
       ),
     );
   }
-  String _formatTime(Duration d) {
-  String two(int n) => n.toString().padLeft(2, '0');
-  final minutes = two(d.inMinutes.remainder(60));
-  final seconds = two(d.inSeconds.remainder(60));
-  return "$minutes:$seconds";
-}
-
 }

@@ -60,15 +60,14 @@ class _SignUpPageState extends State<SignUpPage> {
           'Такой Email уже используется',
           true,
         );
-        return;
       } else {
         SnackBarService.showSnackBar(
           context,
           'Ошибка! Попробуйте снова.',
           true,
         );
-        return;
       }
+      return;
     }
 
     navigator.pushReplacement(
@@ -78,12 +77,16 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screen = MediaQuery.of(context).size;
+    final height = screen.height;
+    final width = screen.width;
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
 
       body: Stack(
         children: [
-
+          // ⭐ Фон
           Positioned.fill(
             child: Image.asset(
               'lib/assets/images/Registr.png',
@@ -92,212 +95,206 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
 
           SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                child: Form(
-                  key: formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-
-                      IconButton(
-                        padding: EdgeInsets.zero,
-                        icon: const Icon(Icons.arrow_back),
-                        color: Colors.black,
-                        iconSize: 28,
-                        onPressed: () => Navigator.pushNamed(context, '/dobro_pozalovat'),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: width * 0.06,
+                        vertical: height * 0.03,
                       ),
-
-                      const SizedBox(height: 40),
-
-                      Center(
-                        child: Text(
-                          'SkillMe',
-                          style: TextStyle(
-                            fontSize: 75,
-                            fontFamily: 'Alana',
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 50),
-
-                      // EMAIL
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFFCBDDFD),
-                              Color(0xFF5D65D6),
-                            ],
-                            stops: [0.6, 1.0],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: TextFormField(
-                          controller: emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (email) =>
-                              email != null && !EmailValidator.validate(email)
-                                  ? 'Введите корректный Email'
-                                  : null,
-                          decoration: InputDecoration(
-                            hintText: 'Введите Email',
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 18,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // PASSWORD
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFFCBDDFD),
-                              Color(0xFF5D65D6),
-                            ],
-                            stops: [0.6, 1.0],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: TextFormField(
-                          controller: passwordController,
-                          obscureText: isHiddenPassword,
-                          validator: (value) =>
-                              value != null && value.length < 6
-                                  ? 'Минимум 6 символов'
-                                  : null,
-                          decoration: InputDecoration(
-                            hintText: 'Введите пароль',
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 18,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                              borderSide: BorderSide.none,
-                            ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                isHiddenPassword
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                                color: Colors.black,
-                              ),
-                              onPressed: togglePasswordView,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // REPEAT PASSWORD
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFFCBDDFD),
-                              Color(0xFF5D65D6),
-                            ],
-                            stops: [0.6, 1.0],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: TextFormField(
-                          controller: repeatPasswordController,
-                          obscureText: isHiddenPassword,
-                          validator: (value) =>
-                              value != null && value.length < 6
-                                  ? 'Минимум 6 символов'
-                                  : null,
-                          decoration: InputDecoration(
-                            hintText: 'Повторите пароль',
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 18,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                              borderSide: BorderSide.none,
-                            ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                isHiddenPassword
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                                color: Colors.black,
-                              ),
-                              onPressed: togglePasswordView,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 30),
-
-                      // SIGN UP BUTTON
-                      SizedBox(
-                        width: double.infinity,
-                        height: 55,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromRGBO(40, 43, 74, 1),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                          ),
-                          onPressed: signUp,
-                          child: const Text(
-                            'Зарегистрироваться',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      Center(
-                        child: GestureDetector(
-                          onTap: () => Navigator.pushNamed(context, '/login'),
-                          child: const Text(
-                            'Уже есть аккаунт? Войти',
-                            style: TextStyle(
-                              decoration: TextDecoration.underline,
+                      child: Form(
+                        key: formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // ⭐ Назад
+                            IconButton(
+                              padding: EdgeInsets.zero,
+                              icon: const Icon(Icons.arrow_back),
                               color: Colors.black,
+                              iconSize: width * 0.08,
+                              onPressed: () =>
+                                  Navigator.pushNamed(context, '/dobro_pozalovat'),
                             ),
-                          ),
+
+                            SizedBox(height: height * 0.04),
+
+                            // ⭐ Логотип
+                            Center(
+                              child: Text(
+                                'SkillMe',
+                                style: TextStyle(
+                                  fontSize: width * 0.18,
+                                  fontFamily: 'Alana',
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+
+                            SizedBox(height: height * 0.06),
+
+                            // ⭐ Email
+                            _buildGradientField(
+                              controller: emailController,
+                              hint: 'Введите Email',
+                              validator: (email) =>
+                                  email != null && !EmailValidator.validate(email)
+                                      ? 'Введите корректный Email'
+                                      : null,
+                              width: width,
+                              height: height,
+                            ),
+
+                            SizedBox(height: height * 0.025),
+
+                            // ⭐ Пароль
+                            _buildGradientField(
+                              controller: passwordController,
+                              hint: 'Введите пароль',
+                              obscure: isHiddenPassword,
+                              validator: (value) =>
+                                  value != null && value.length < 6
+                                      ? 'Минимум 6 символов'
+                                      : null,
+                              suffix: IconButton(
+                                icon: Icon(
+                                  isHiddenPassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: Colors.black,
+                                ),
+                                onPressed: togglePasswordView,
+                              ),
+                              width: width,
+                              height: height,
+                            ),
+
+                            SizedBox(height: height * 0.025),
+
+                            // ⭐ Повтор пароля
+                            _buildGradientField(
+                              controller: repeatPasswordController,
+                              hint: 'Повторите пароль',
+                              obscure: isHiddenPassword,
+                              validator: (value) =>
+                                  value != null && value.length < 6
+                                      ? 'Минимум 6 символов'
+                                      : null,
+                              suffix: IconButton(
+                                icon: Icon(
+                                  isHiddenPassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: Colors.black,
+                                ),
+                                onPressed: togglePasswordView,
+                              ),
+                              width: width,
+                              height: height,
+                            ),
+
+                            SizedBox(height: height * 0.05),
+
+                            // ⭐ Кнопка регистрации
+                            SizedBox(
+                              width: double.infinity,
+                              height: height * 0.065,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      const Color.fromRGBO(40, 43, 74, 1),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                ),
+                                onPressed: signUp,
+                                child: Text(
+                                  'Зарегистрироваться',
+                                  style: TextStyle(
+                                    fontSize: width * 0.05,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            SizedBox(height: height * 0.03),
+
+                            // ⭐ Уже есть аккаунт
+                            Center(
+                              child: GestureDetector(
+                                onTap: () =>
+                                    Navigator.pushNamed(context, '/login'),
+                                child: const Text(
+                                  'Уже есть аккаунт? Войти',
+                                  style: TextStyle(
+                                    decoration: TextDecoration.underline,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            SizedBox(height: height * 0.03),
+                          ],
                         ),
                       ),
-
-                      const SizedBox(height: 20),
-                    ],
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // ⭐ Универсальный адаптивный градиентный input
+  Widget _buildGradientField({
+    required TextEditingController controller,
+    required String hint,
+    required double width,
+    required double height,
+    bool obscure = false,
+    String? Function(String?)? validator,
+    Widget? suffix,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFFCBDDFD),
+            Color(0xFF5D65D6),
+          ],
+          stops: [0.6, 1.0],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: TextFormField(
+        controller: controller,
+        obscureText: obscure,
+        validator: validator,
+        decoration: InputDecoration(
+          hintText: hint,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: width * 0.05,
+            vertical: height * 0.02,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide.none,
+          ),
+          suffixIcon: suffix,
+        ),
       ),
     );
   }

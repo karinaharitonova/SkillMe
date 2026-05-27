@@ -16,42 +16,93 @@ class FirstPage extends StatefulWidget {
 class _FirstPageState extends State<FirstPage> {
   int currentIndex = 0;
 
+  final List<IconData> _icons = [
+    Icons.home,
+    Icons.grid_view,
+    Icons.favorite,
+    Icons.person,
+  ];
+
+  // Фиксированные размеры навигации
+  static const double _navHeight = 80.0;
+  static const double _iconSize = 28.0;
+  static const double _topSelectedOffset = 8.0;
+  static const double _topUnselectedOffset = 12.0;
+  static const double _indicatorWidth = 28.0;
+  static const double _bottomSpacing = 6.0;
+
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-
-    final pages = <Widget>[
+    final pages = [
       const HomePage(),
       const CategoriesPage(),
       const FavoritePage(),
-      user == null ? const DobroPozalovatPage() : const AccountPage(),
+      const AccountPage(),
     ];
 
-    return Scaffold(
-      // Позволяет телу экрана заходить под BottomNavigationBar (убирает видимый "прямоугольник")
-      extendBody: true,
+    if (currentIndex == 3 && user == null) {
+      return const DobroPozalovatPage();
+    }
 
-      // IndexedStack держит все страницы в дереве и не пересоздаёт их при переключении
+    // Жёстко заданные цвета: белый фон под кнопками и синий для выбранной иконки
+    const Color navBackground = Colors.white;
+    const Color selectedColor = Color(0xFF5D65D6);
+    final Color unselectedColor = Colors.grey.shade500;
+
+    return Scaffold(
+      extendBody: true,
       body: IndexedStack(
         index: currentIndex,
         children: pages,
       ),
 
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentIndex,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: const Color.fromARGB(255, 148, 137, 137),
-        backgroundColor: Colors.black,
-        iconSize: 30,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        onTap: (index) => setState(() => currentIndex = index),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.grid_view), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
-        ],
+      // Простой bottomNavigationBar с белым фоном
+      bottomNavigationBar: SizedBox(
+        height: _navHeight,
+        child: BottomAppBar(
+          color: navBackground, // белый прямоугольник под кнопками
+          elevation: 8,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: List.generate(_icons.length, (index) {
+              final isSelected = index == currentIndex;
+              final color = isSelected ? const Color(0xFF5D65D6) : unselectedColor;
+              return Expanded(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => setState(() => currentIndex = index),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 220),
+                        curve: Curves.easeOut,
+                        margin: EdgeInsets.only(top: isSelected ? _topSelectedOffset : _topUnselectedOffset),
+                        child: Icon(
+                          _icons[index],
+                          size: _iconSize,
+                          color: color, // иконки: синие для выбранной, серые для остальных
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: isSelected ? _indicatorWidth : 0,
+                        height: 3,
+                        decoration: BoxDecoration(
+                          color: isSelected ? const Color(0xFF5D65D6) : Colors.transparent, // синий индикатор
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      const SizedBox(height: _bottomSpacing),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          ),
+        ),
       ),
     );
   }

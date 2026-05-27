@@ -2,18 +2,15 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/pages/snack_bar.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
-final apiKey = dotenv.env['API_KEY'];
 
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key});
 
   @override
-  State<ResetPasswordPage> createState() => _ResetPasswordScreenState();
+  State<ResetPasswordPage> createState() => _ResetPasswordPageState();
 }
 
-class _ResetPasswordScreenState extends State<ResetPasswordPage> {
+class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final emailController = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
@@ -39,15 +36,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordPage> {
           'Такой email не зарегистрирован!',
           true,
         );
-        return;
       } else {
         SnackBarService.showSnackBar(
           context,
           'Ошибка! Попробуйте снова.',
           true,
         );
-        return;
       }
+      return;
     }
 
     SnackBarService.showSnackBar(
@@ -61,102 +57,123 @@ class _ResetPasswordScreenState extends State<ResetPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screen = MediaQuery.of(context).size;
+    final height = screen.height;
+    final width = screen.width;
+
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
 
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            child: Form(
-              key: formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-
-                  Row(
-                    children: [
-                      IconButton(
-                        padding: EdgeInsets.zero,
-                        icon: const Icon(Icons.arrow_back),
-                        color: Colors.black,
-                        iconSize: 28,
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      const SizedBox(width: 10),
-                      const Text(
-                        'СБРОС ПАРОЛЯ',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight,
+                ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: width * 0.06,
+                    vertical: height * 0.03,
                   ),
-
-                  const SizedBox(height: 40),
-
-                  Container(
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFFCBDDFD),
-                              Color(0xFF5D65D6),
-                            ],
-                            stops: [0.6, 1.0],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(14),
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // ⭐ Назад + Заголовок
+                        Row(
+                          children: [
+                            IconButton(
+                              padding: EdgeInsets.zero,
+                              icon: const Icon(Icons.arrow_back),
+                              color: Colors.black,
+                              iconSize: width * 0.08,
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                            SizedBox(width: width * 0.03),
+                            Text(
+                              'СБРОС ПАРОЛЯ',
+                              style: TextStyle(
+                                fontSize: width * 0.08,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
-                        child: TextFormField(
-                          controller: emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (email) =>
-                              email != null && !EmailValidator.validate(email)
-                                  ? 'Введите корректный Email'
-                                  : null,
-                          decoration: InputDecoration(
-                            hintText: 'Введите Email',
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 18,
+
+                        SizedBox(height: height * 0.05),
+
+                        // ⭐ Поле Email
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [
+                                Color(0xFFCBDDFD),
+                                Color(0xFF5D65D6),
+                              ],
+                              stops: [0.6, 1.0],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                              borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: TextFormField(
+                            controller: emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            validator: (email) =>
+                                email != null && !EmailValidator.validate(email)
+                                    ? 'Введите корректный Email'
+                                    : null,
+                            decoration: InputDecoration(
+                              hintText: 'Введите Email',
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: width * 0.05,
+                                vertical: height * 0.02,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: BorderSide.none,
+                              ),
                             ),
                           ),
                         ),
-                      ),
 
-                  const SizedBox(height: 30),
+                        SizedBox(height: height * 0.05),
 
-                  SizedBox(
-                        width: double.infinity,
-                        height: 55,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromRGBO(40, 43, 74, 1),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
+                        // ⭐ Кнопка сброса
+                        SizedBox(
+                          width: double.infinity,
+                          height: height * 0.065,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  const Color.fromRGBO(40, 43, 74, 1),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
                             ),
-                          ),
-                          onPressed: resetPassword,
-                          child: const Text(
-                            'Сбросить пароль',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Color.fromARGB(255, 0, 0, 0),
+                            onPressed: resetPassword,
+                            child: Text(
+                              'Сбросить пароль',
+                              style: TextStyle(
+                                fontSize: width * 0.05,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
-                      ),
 
-                ],
+                        SizedBox(height: height * 0.03),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );

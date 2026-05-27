@@ -13,28 +13,35 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    initApp();
+    // Отложенный запуск, чтобы layout успел выполниться и MediaQuery был доступен
+    WidgetsBinding.instance.addPostFrameCallback((_) => initApp());
   }
 
   Future<void> initApp() async {
-    final videos = await VideoRepository.loadVideos();
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => FirstPage(),
-      ),
-    );
+    try {
+      // Ждём загрузки, но не дольше 10 секунд
+      await VideoRepository.loadVideos().timeout(const Duration(seconds: 10));
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const FirstPage()),
+      );
+    } catch (e, st) {
+      debugPrint('Splash init error: $e\n$st');
+      if (!mounted) return;
+      // В случае ошибки всё равно переходим дальше, можно показать экран ошибки вместо этого
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const FirstPage()),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
-        child: CircularProgressIndicator(
-          color: Colors.blue,
-          strokeWidth: 3,
-        ),
+        child: CircularProgressIndicator(color: Colors.blue, strokeWidth: 3),
       ),
     );
   }
