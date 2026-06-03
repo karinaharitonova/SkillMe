@@ -87,7 +87,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     key: formKey,
                     child: Column(
                       children: [
-                        // ⭐ Email
+                        // Email
                         TextFormField(
                           controller: emailController,
                           keyboardType: TextInputType.emailAddress,
@@ -109,7 +109,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                         SizedBox(height: height * 0.03),
 
-                        // ⭐ Пароль
+                        // Пароль
                         TextFormField(
                           controller: passwordController,
                           obscureText: isHiddenPassword,
@@ -144,7 +144,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                         SizedBox(height: height * 0.04),
 
-                        // ⭐ Кнопка Войти
+                        // Кнопка Войти
                         SizedBox(
                           width: double.infinity,
                           height: height * 0.065,
@@ -168,7 +168,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                         SizedBox(height: height * 0.04),
 
-                        // ⭐ Регистрация
+                        //  Регистрация
                         TextButton(
                           onPressed: () =>
                               Navigator.of(context).pushNamed('/signup'),
@@ -180,7 +180,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ),
 
-                        // ⭐ Сброс пароля
+                        //  Сброс пароля
                         TextButton(
                           onPressed: () =>
                               Navigator.of(context).pushNamed('/reset_password'),

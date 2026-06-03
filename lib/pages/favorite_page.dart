@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:myapp/pages/registration/login_page.dart';
 import 'video_player_page.dart';
 
 class FavoritePage extends StatelessWidget {
@@ -33,7 +32,7 @@ class FavoritePage extends StatelessWidget {
         final data = d.data() as Map<String, dynamic>;
         return {
           ...data,
-          'id': d.id, 
+          'id': d.id,
         };
       }).toList());
     }
@@ -56,6 +55,7 @@ class FavoritePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
+
     if (user == null) {
       return Scaffold(
         resizeToAvoidBottomInset: false,
@@ -64,34 +64,15 @@ class FavoritePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('ИЗБРАННОЕ', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+              const Text('ИЗБРАННОЕ',
+                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
               const SizedBox(height: 30),
-              Expanded(
+              const Expanded(
                 child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        "Войдите в аккаунт, чтобы добавлять видео в избранное",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(height: 24),
-                      SizedBox(
-                        width: 200,
-                        height: 50,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF064A8F),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                          ),
-                          onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
-                          },
-                          child: const Text('Войти', style: TextStyle(fontSize: 18, color: Colors.white)),
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    "Войдите в аккаунт, чтобы добавлять видео в избранное",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16),
                   ),
                 ),
               ),
@@ -119,6 +100,7 @@ class FavoritePage extends StatelessWidget {
             }
 
             final videos = videosSnap.data ?? [];
+            final isDark = Theme.of(context).brightness == Brightness.dark;
 
             return Scaffold(
               resizeToAvoidBottomInset: false,
@@ -127,26 +109,59 @@ class FavoritePage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('ИЗБРАННОЕ', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
-                    //const SizedBox(height: 30),
+                    const Text('ИЗБРАННОЕ',
+                        style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+
+                    const SizedBox(height: 20),
+
                     videos.isEmpty
-                        ? const Expanded(child: Center(child: Text("Избранных видео пока нет", style: TextStyle(fontSize: 16))))
+                        ? const Expanded(
+                            child: Center(
+                              child: Text(
+                                "Избранных видео пока нет",
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          )
                         : Expanded(
                             child: ListView.builder(
                               itemCount: videos.length,
                               itemBuilder: (context, index) {
                                 final video = videos[index];
-                                final videoId = (video['id'] ?? video['videoId'] ?? '').toString();
+                                final videoId =
+                                    (video['id'] ?? video['videoId'] ?? '').toString();
+
+                                final cardColor = isDark
+                                    ? const Color(0xFF1E1E1E)
+                                    : Colors.white;
 
                                 return GestureDetector(
                                   onTap: () {
-                                    Navigator.push(context, MaterialPageRoute(builder: (_) => VideoPlayerPage(
-                                      videoUrl: video['videoUrl'],
-                                      title: video['title'],
-                                    )));
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => VideoPlayerPage(
+                                          videoUrl: video['videoUrl'],
+                                          title: video['title'],
+                                        ),
+                                      ),
+                                    );
                                   },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(bottom: 25),
+                                  child: Container(
+                                    margin: const EdgeInsets.only(bottom: 25),
+                                    decoration: BoxDecoration(
+                                      color: cardColor,
+                                      borderRadius: BorderRadius.circular(18),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(
+                                              isDark ? 0.4 : 0.15),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    padding: const EdgeInsets.all(14),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
@@ -155,42 +170,65 @@ class FavoritePage extends StatelessWidget {
                                           child: AspectRatio(
                                             aspectRatio: 16 / 9,
                                             child: video['thumbnailUrl'] != null
-                                                ? Image.network(video['thumbnailUrl'], fit: BoxFit.cover)
+                                                ? Image.network(
+                                                    video['thumbnailUrl'],
+                                                    fit: BoxFit.cover,
+                                                  )
                                                 : Container(
-                                                    color: Colors.grey[300],
-                                                    child: const Center(
-                                                      child: Icon(Icons.play_circle_fill, size: 70, color: Colors.black54),
+                                                    color: isDark
+                                                        ? Colors.white.withOpacity(0.1)
+                                                        : Colors.grey[300],
+                                                    child: Icon(
+                                                      Icons.play_circle_fill,
+                                                      size: 70,
+                                                      color: isDark
+                                                          ? Colors.white70
+                                                          : Colors.black54,
                                                     ),
                                                   ),
                                           ),
                                         ),
-                                        //const SizedBox(height: 10),
+
+                                        const SizedBox(height: 12),
+
                                         Row(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Expanded(
                                               child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
-                                                  Text(video['title'] ?? "Без названия", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
-                                                  const SizedBox(height: 5),
-                                                  Text(video['category'] ?? "", style: const TextStyle(fontSize: 15, color: Colors.grey)),
+                                                  Text(
+                                                    video['title'] ?? "Без названия",
+                                                    style: TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight: FontWeight.w700,
+                                                      color: isDark
+                                                          ? Colors.white
+                                                          : Colors.black,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 4),
+                                                  Text(
+                                                    video['category'] ?? "",
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      color: isDark
+                                                          ? Colors.white.withOpacity(0.7)
+                                                          : Colors.grey[600],
+                                                    ),
+                                                  ),
                                                 ],
                                               ),
                                             ),
+
                                             IconButton(
-                                              icon: const Icon(Icons.favorite, color: Colors.red),
+                                              icon: const Icon(Icons.favorite,
+                                                  color: Colors.red),
                                               onPressed: () async {
-                                                try {
-                                                  await _removeFromFavorites(user.uid, videoId);
-                                                  if (context.mounted) {
-                                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Удалено из избранного')));
-                                                  }
-                                                } catch (e) {
-                                                  if (context.mounted) {
-                                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ошибка при удалении')));
-                                                  }
-                                                }
+                                                await _removeFromFavorites(
+                                                    user.uid, videoId);
                                               },
                                             ),
                                           ],

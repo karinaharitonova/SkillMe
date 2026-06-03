@@ -1,42 +1,40 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class VideoService {
   final supabase = Supabase.instance.client;
   final firestore = FirebaseFirestore.instance;
 
-  /// Скачивает видео по URL и загружает в Supabase
+  /// Загружаем видео через Edge Function (сервер сам скачивает и кладет в Storage)
   Future<String> uploadVideoFromUrl(String url, String fileName) async {
-    // 1. Корректное потоковое скачивание
-    final request = http.Request('GET', Uri.parse(url));
-    final response = await request.send();
+    print('🚀 Отправляем запрос на Edge Function...');
+    
+    // Вызываем Edge Function 'import-video'
+    final response = await supabase.functions.invoke(
+      'import-video',
+      body: {
+        'stockUrl': url,
+        'fileName': fileName,
+      },
+    );
 
-    if (response.statusCode != 200) {
-      throw Exception('Ошибка скачивания: ${response.statusCode}');
+    // Проверяем ответ
+    if (response.data == null) {
+      throw Exception('Сервер вернул пустой ответ');
     }
 
-    final bytes = await response.stream.toBytes();
-    print('Размер файла: ${bytes.length}');
+    if (response.data['success'] != true) {
+      final error = response.data['error'] ?? 'Неизвестная ошибка';
+      throw Exception('Ошибка Edge Function: $error');
+    }
 
-    // 2. Загружаем в подпапку uploads/
-    final storagePath = 'uploads/$fileName';
-
-await supabase.storage.from('videos').uploadBinary(
-  storagePath,
-  bytes,
-  fileOptions: const FileOptions(
-    contentType: 'video/mp4',
-    upsert: true,
-  ),
-);
-
-
-    // 3. Получаем публичный URL
-    return supabase.storage.from('videos').getPublicUrl(storagePath);
+    final publicUrl = response.data['url'];
+    print('✅ Видео загружено! URL: $publicUrl');
+    
+    return publicUrl;
   }
 
-  /// Создаёт документ в Firestore
+  /// Сохраняем документ в Firestore (этот метод не меняется)
   Future<void> saveVideoToFirestore({
     required String title,
     required String categoryId,
@@ -52,9 +50,9 @@ await supabase.storage.from('videos').uploadBinary(
       'duration': duration,
       'createdAt': FieldValue.serverTimestamp(),
     });
+    print('✅ Документ сохранен в Firestore');
   }
 
-  /// Полный процесс: загрузка + Firestore
   Future<void> addVideo({
     required String sourceUrl,
     required String fileName,
@@ -72,5 +70,7 @@ await supabase.storage.from('videos').uploadBinary(
       thumbnailUrl: thumbnailUrl,
       duration: duration,
     );
+    
+    print('🎉 Видео добавлено успешно!');
   }
 }

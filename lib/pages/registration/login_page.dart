@@ -65,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
 
       body: Stack(
         children: [
-          // ⭐ Фон
+          // Фон
           Positioned.fill(
             child: Image.asset(
               'lib/assets/images/Registr.png',
@@ -92,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // ⭐ Назад
+                            // Назад
                             IconButton(
                               padding: EdgeInsets.zero,
                               icon: const Icon(Icons.arrow_back),
@@ -104,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
 
                             SizedBox(height: height * 0.04),
 
-                            // ⭐ Логотип
+                            // Логотип
                             Center(
                               child: Text(
                                 'SkillMe',
@@ -118,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
 
                             SizedBox(height: height * 0.06),
 
-                            // ⭐ Email
+                            // Email
                             Container(
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
@@ -156,7 +156,7 @@ class _LoginPageState extends State<LoginPage> {
 
                             SizedBox(height: height * 0.025),
 
-                            // ⭐ Пароль
+                            // Пароль
                             Container(
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
@@ -203,7 +203,7 @@ class _LoginPageState extends State<LoginPage> {
 
                             SizedBox(height: height * 0.05),
 
-                            // ⭐ Кнопка Войти
+                            // Кнопка Войти
                             SizedBox(
                               width: double.infinity,
                               height: height * 0.065,
@@ -228,7 +228,7 @@ class _LoginPageState extends State<LoginPage> {
 
                             SizedBox(height: height * 0.06),
 
-                            // ⭐ Яндекс
+                            // Яндекс
                             Center(
                               child: GestureDetector(
                                 onTap: () async {

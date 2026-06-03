@@ -1,116 +1,108 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 
 class ProfileWidget extends StatelessWidget {
   final String imagePath;
-  final VoidCallback onClicked;
+  final VoidCallback? onClicked;
+  final bool editable;
 
   const ProfileWidget({
     Key? key,
     required this.imagePath,
-    required this.onClicked,
+    this.onClicked,
+    this.editable = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // Можно заменить на Theme.of(context).colorScheme.primary и т.д.
-    const Color gradStart = Color(0xFFCBDDFD);
-    const Color gradEnd = Color(0xFF5D65D6);
-
     return Center(
       child: Stack(
+        alignment: Alignment.center,
         children: [
-          buildImage(),
-          Positioned(
-            bottom: 0,
-            right: 4,
-            child: buildEditIcon(gradStart, gradEnd),
-          ),
+          _buildImage(),
+          if (editable && onClicked != null)
+            Positioned(
+              bottom: 0,
+              right: 4,
+              child: _buildEditIcon(onClicked!),
+            ),
         ],
       ),
     );
   }
 
-  Widget buildImage() {
-    final hasImage = imagePath.isNotEmpty;
-    final imageProvider = hasImage ? NetworkImage(imagePath) : null;
+  Widget _buildImage() {
+    final bool hasImage = imagePath.isNotEmpty;
 
-    return ClipOval(
+    ImageProvider? provider;
+    if (imagePath.startsWith("http")) {
+      provider = NetworkImage(imagePath);
+    } else if (imagePath.isNotEmpty) {
+      provider = FileImage(File(imagePath));
+    }
+
+    final avatar = ClipOval(
       child: Material(
         color: Colors.transparent,
         child: Ink(
           width: 128,
           height: 128,
           decoration: BoxDecoration(
-            color: hasImage ? Colors.transparent : const Color(0xFFEDE7F6),
             shape: BoxShape.circle,
-            image: hasImage
-                ? DecorationImage(image: imageProvider as ImageProvider, fit: BoxFit.cover)
-                : null,
+            color: provider == null ? Colors.grey.shade300 : null,
+            image: provider != null ? DecorationImage(image: provider, fit: BoxFit.cover) : null,
           ),
+          child: provider == null ? const Icon(Icons.person, size: 60, color: Colors.white) : null,
+        ),
+      ),
+    );
+
+    // Если редактируемый и есть обработчик — делаем InkWell по аватару
+    if (editable && onClicked != null) {
+      return GestureDetector(
+        onTap: onClicked,
+        child: avatar,
+      );
+    }
+
+    // Иначе просто показываем аватар без возможности открыть галерею
+    return avatar;
+  }
+
+  Widget _buildEditIcon(VoidCallback onTap) {
+    return _buildCircle(
+      color: Colors.white,
+      padding: 3,
+      child: _buildCircle(
+        color: const Color(0xFF5D65D6),
+        padding: 8,
+        child: Material(
+          color: Colors.transparent,
           child: InkWell(
-            onTap: onClicked,
             customBorder: const CircleBorder(),
-            child: hasImage
-                ? null
-                : const Center(
-                    child: Icon(Icons.person, size: 56, color: Colors.black54),
-                  ),
+            onTap: onTap,
+            child: const SizedBox(
+              width: 20,
+              height: 20,
+              child: Icon(Icons.edit, color: Colors.white, size: 16),
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget buildEditIcon(Color gradStart, Color gradEnd) => buildCircle(
-        color: Colors.white,
-        all: 3,
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            // УБРАЛИ const перед LinearGradient, чтобы можно было использовать переменные
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [gradStart, gradEnd],
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.12),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: onClicked,
-              customBorder: const CircleBorder(),
-              child: const SizedBox(
-                width: 20,
-                height: 20,
-                child: Icon(
-                  Icons.edit,
-                  color: Colors.white,
-                  size: 16,
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-
-  Widget buildCircle({
-    required Widget child,
-    required double all,
+  Widget _buildCircle({
     required Color color,
-  }) =>
-      ClipOval(
-        child: Container(
-          padding: EdgeInsets.all(all),
-          color: color,
-          child: child,
-        ),
-      );
+    required double padding,
+    required Widget child,
+  }) {
+    return ClipOval(
+      child: Container(
+        padding: EdgeInsets.all(padding),
+        color: color,
+        child: child,
+      ),
+    );
+  }
 }

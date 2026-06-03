@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'video_player_page.dart';
 
@@ -19,54 +18,91 @@ class VideosByCategoryPage extends StatefulWidget {
 }
 
 class _VideosByCategoryPageState extends State<VideosByCategoryPage> {
-  // Проверка доступности URL
-  Future<bool> _checkUrl(String url) async {
-    if (url.isEmpty) return false;
+  // Кэш избранного (чтобы не делать запросы к Firestore для каждого видео)
+  final Set<String> _favoriteIds = {};
+  bool _favoritesLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFavorites();
+  }
+
+  // Загружаем избранное 
+  Future<void> _loadFavorites() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      setState(() => _favoritesLoaded = true);
+      return;
+    }
+
     try {
-      final r = await http.head(Uri.parse(url)).timeout(const Duration(seconds: 3));
-      return r.statusCode == 200;
-    } catch (_) {
-      return false;
+      final doc = await FirebaseFirestore.instance
+          .collection('favorites')
+          .doc(user.uid)
+          .get();
+
+      final list = List<String>.from(doc.data()?["videoIds"] ?? []);
+      
+      if (mounted) {
+        setState(() {
+          _favoriteIds.addAll(list);
+          _favoritesLoaded = true;
+        });
+      }
+    } catch (e) {
+      print('Ошибка загрузки избранного: $e');
+      if (mounted) setState(() => _favoritesLoaded = true);
     }
   }
 
   // Добавить / убрать из избранного
   Future<void> toggleFavorite(String videoId) async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Войдите, чтобы добавить в избранное')),
+      );
+      return;
+    }
 
     final uid = user.uid;
     final doc = FirebaseFirestore.instance.collection('favorites').doc(uid);
 
-    final snapshot = await doc.get();
-    List list = List.from(snapshot.data()?["videoIds"] ?? []);
+    setState(() {
+      if (_favoriteIds.contains(videoId)) {
+        _favoriteIds.remove(videoId);
+      } else {
+        _favoriteIds.add(videoId);
+      }
+    });
 
-    if (list.contains(videoId)) {
-      list.remove(videoId);
-    } else {
-      list.add(videoId);
+    try {
+      final snapshot = await doc.get();
+      List list = List.from(snapshot.data()?["videoIds"] ?? []);
+
+      if (list.contains(videoId)) {
+        list.remove(videoId);
+      } else {
+        list.add(videoId);
+      }
+
+      if (!snapshot.exists) {
+        await doc.set({"videoIds": list});
+      } else {
+        await doc.update({"videoIds": list});
+      }
+    } catch (e) {
+      print('Ошибка сохранения: $e');
+      // Откатываем изменение
+      setState(() {
+        if (_favoriteIds.contains(videoId)) {
+          _favoriteIds.remove(videoId);
+        } else {
+          _favoriteIds.add(videoId);
+        }
+      });
     }
-
-    if (!snapshot.exists) {
-      await doc.set({"videoIds": list});
-    } else {
-      await doc.update({"videoIds": list});
-    }
-
-    setState(() {}); 
-  }
-
-  Future<bool> isFavorite(String videoId) async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return false;
-
-    final doc = await FirebaseFirestore.instance
-        .collection('favorites')
-        .doc(user.uid)
-        .get();
-
-    List list = List.from(doc.data()?["videoIds"] ?? []);
-    return list.contains(videoId);
   }
 
   @override
@@ -99,99 +135,105 @@ class _VideosByCategoryPageState extends State<VideosByCategoryPage> {
               final duration = video['duration'] ?? 0;
               final videoId = doc.id;
 
-              final Future<bool> thumbFuture =
-                  thumb.isNotEmpty ? _checkUrl(thumb) : Future.value(false);
+              final isFav = _favoriteIds.contains(videoId);
 
-              return FutureBuilder<bool>(
-                future: thumbFuture,
-                builder: (context, thumbSnap) {
-                  final thumbOk = thumbSnap.data == true;
-
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 25),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => VideoPlayerPage(
-                                  videoUrl: videoUrl,
-                                  title: title,
-                                ),
-                              ),
-                            );
-                          },
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(14),
-                            child: AspectRatio(
-                              aspectRatio: 16 / 9,
-                              child: thumbOk
-                                  ? Image.network(thumb, fit: BoxFit.cover)
-                                  : Container(
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 25),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Превью видео
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => VideoPlayerPage(
+                              videoUrl: videoUrl,
+                              title: title,
+                            ),
+                          ),
+                        );
+                      },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(14),
+                        child: AspectRatio(
+                          aspectRatio: 16 / 9,
+                          child: thumb.isNotEmpty
+                              ? Image.network(
+                                  thumb,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder: (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Container(
+                                      color: Colors.grey[300],
+                                      child: const Center(
+                                        child: CircularProgressIndicator(strokeWidth: 2),
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
                                       color: Colors.grey[300],
                                       child: const Center(
                                         child: Icon(Icons.play_circle_fill,
                                             size: 70, color: Colors.black54),
                                       ),
-                                    ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 10),
-
-                        Text(
-                          title,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-
-                        const SizedBox(height: 5),
-
-                        Text(
-                          "Длительность: $duration сек",
-                          style: const TextStyle(
-                            fontSize: 15,
-                            color: Colors.grey,
-                          ),
-                        ),
-
-                        const SizedBox(height: 12),
-
-                        FutureBuilder<bool>(
-                          future: isFavorite(videoId),
-                          builder: (context, favSnap) {
-                            final isFav = favSnap.data == true;
-
-                            return GestureDetector(
-                              onTap: () async {
-                                await toggleFavorite(videoId);
-                              },
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    isFav ? Icons.favorite : Icons.favorite_border,
-                                    size: 26,
-                                    color: isFav ? Colors.red : Colors.black,
+                                    );
+                                  },
+                                )
+                              : Container(
+                                  color: Colors.grey[300],
+                                  child: const Center(
+                                    child: Icon(Icons.play_circle_fill,
+                                        size: 70, color: Colors.black54),
                                   ),
-                                  const SizedBox(width: 6),
-                                  Text(isFav ? "В избранном" : "В избранное"),
-                                ],
-                              ),
-                            );
-                          },
+                                ),
                         ),
-
-                        const SizedBox(height: 20),
-                      ],
+                      ),
                     ),
-                  );
-                },
+
+                    const SizedBox(height: 10),
+
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+
+                    const SizedBox(height: 5),
+
+                    Text(
+                      "Длительность: $duration сек",
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: Colors.grey,
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // Избранное
+                    GestureDetector(
+                      onTap: () => toggleFavorite(videoId),
+                      child: Row(
+                        children: [
+                          Icon(
+                            isFav ? Icons.favorite : Icons.favorite_border,
+                            size: 26,
+                            color: isFav ? Colors.red : Colors.black,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(isFav ? "В избранном" : "В избранное"),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+                  ],
+                ),
               );
             },
           );

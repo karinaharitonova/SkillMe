@@ -23,17 +23,18 @@ class _FirstPageState extends State<FirstPage> {
     Icons.person,
   ];
 
-  // Фиксированные размеры навигации
-  static const double _navHeight = 80.0;
-  static const double _iconSize = 28.0;
-  static const double _topSelectedOffset = 8.0;
-  static const double _topUnselectedOffset = 12.0;
-  static const double _indicatorWidth = 28.0;
-  static const double _bottomSpacing = 6.0;
+  static const double _navHeight = 70.0;
+  static const double _iconSize = 30.0;
+  static const double _topSelectedOffset = 6.0;
+  static const double _topUnselectedOffset = 10.0;
+  static const double _indicatorWidth = 32.0;
+  static const double _indicatorHeight = 3.5;
+  static const double _bottomSpacing = 4.0;
 
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
+
     final pages = [
       const HomePage(),
       const CategoriesPage(),
@@ -45,10 +46,19 @@ class _FirstPageState extends State<FirstPage> {
       return const DobroPozalovatPage();
     }
 
-    // Жёстко заданные цвета: белый фон под кнопками и синий для выбранной иконки
-    const Color navBackground = Colors.white;
-    const Color selectedColor = Color(0xFF5D65D6);
-    final Color unselectedColor = Colors.grey.shade500;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final Color navBackground = isDark
+        ? const Color(0xFF1A1A1A)
+        : Colors.white;
+
+    final Color selectedColor = isDark
+        ? const Color(0xFFCBDDFD)
+        : const Color.fromARGB(255, 53, 63, 205);
+
+    final Color unselectedColor = isDark
+        ? Colors.white70
+        : Colors.grey;
 
     return Scaffold(
       extendBody: true,
@@ -56,52 +66,61 @@ class _FirstPageState extends State<FirstPage> {
         index: currentIndex,
         children: pages,
       ),
-
-      // Простой bottomNavigationBar с белым фоном
-      bottomNavigationBar: SizedBox(
+      bottomNavigationBar: Container(
         height: _navHeight,
-        child: BottomAppBar(
-          color: navBackground, // белый прямоугольник под кнопками
-          elevation: 8,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: List.generate(_icons.length, (index) {
-              final isSelected = index == currentIndex;
-              final color = isSelected ? const Color(0xFF5D65D6) : unselectedColor;
-              return Expanded(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => setState(() => currentIndex = index),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 220),
-                        curve: Curves.easeOut,
-                        margin: EdgeInsets.only(top: isSelected ? _topSelectedOffset : _topUnselectedOffset),
-                        child: Icon(
-                          _icons[index],
-                          size: _iconSize,
-                          color: color, // иконки: синие для выбранной, серые для остальных
-                        ),
+        decoration: BoxDecoration(
+          color: navBackground,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: List.generate(_icons.length, (index) {
+            final isSelected = index == currentIndex;
+            final color = isSelected ? selectedColor : unselectedColor;
+
+            return GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => setState(() => currentIndex = index),
+              child: SizedBox(
+                width: 80, 
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 220),
+                      curve: Curves.easeOut,
+                      margin: EdgeInsets.only(
+                        top: isSelected ? _topSelectedOffset : _topUnselectedOffset,
                       ),
-                      const SizedBox(height: 6),
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        width: isSelected ? _indicatorWidth : 0,
-                        height: 3,
-                        decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xFF5D65D6) : Colors.transparent, // синий индикатор
-                          borderRadius: BorderRadius.circular(2),
-                        ),
+                      child: Icon(
+                        _icons[index],
+                        size: _iconSize,
+                        color: color,
                       ),
-                      const SizedBox(height: _bottomSpacing),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 6),
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: isSelected ? _indicatorWidth : 0,
+                      height: _indicatorHeight,
+                      decoration: BoxDecoration(
+                        color: isSelected ? selectedColor : Colors.transparent,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(height: _bottomSpacing),
+                  ],
                 ),
-              );
-            }),
-          ),
+              ),
+            );
+          }),
         ),
       ),
     );

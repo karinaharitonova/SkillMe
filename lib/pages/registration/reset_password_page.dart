@@ -83,7 +83,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // ⭐ Назад + Заголовок
                         Row(
                           children: [
                             IconButton(
@@ -106,7 +105,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
                         SizedBox(height: height * 0.05),
 
-                        // ⭐ Поле Email
+                        // Поле Email
                         Container(
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
@@ -143,7 +142,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
                         SizedBox(height: height * 0.05),
 
-                        // ⭐ Кнопка сброса
+                        // Кнопка сброса
                         SizedBox(
                           width: double.infinity,
                           height: height * 0.065,

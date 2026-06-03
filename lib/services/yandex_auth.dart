@@ -1,6 +1,4 @@
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 class YandexAuth {
   static Future<String?> signIn() async {

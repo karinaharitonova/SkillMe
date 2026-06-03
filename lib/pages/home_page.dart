@@ -30,32 +30,83 @@ class _HomePageState extends State<HomePage> {
   Future<void> loadAllVideos() async {
     if (globalVideosCache.isNotEmpty) {
       setState(() {
-        videos = globalVideosCache;
-        filteredVideos = globalVideosCache;
+        videos = List<Map<String, dynamic>>.from(globalVideosCache);
+        filteredVideos = List<Map<String, dynamic>>.from(globalVideosCache);
         isLoading = false;
       });
       return;
     }
 
-    final snapshot = await FirebaseFirestore.instance
-        .collection('videos')
-        .orderBy('createdAt', descending: true)
-        .get();
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('videos')
+          .orderBy('createdAt', descending: true)
+          .get();
 
-    final loaded = snapshot.docs
-        .map((doc) => doc.data())
-        .toList()
-        .cast<Map<String, dynamic>>();
+      final loaded = snapshot.docs
+          .map((doc) => doc.data())
+          .toList()
+          .cast<Map<String, dynamic>>();
 
-    loaded.shuffle();
+      loaded.shuffle();
 
-    globalVideosCache = loaded;
+      globalVideosCache = List<Map<String, dynamic>>.from(loaded);
 
-    setState(() {
-      videos = loaded;
-      filteredVideos = loaded;
-      isLoading = false;
-    });
+      setState(() {
+        videos = List<Map<String, dynamic>>.from(loaded);
+        filteredVideos = List<Map<String, dynamic>>.from(loaded);
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        videos = [];
+        filteredVideos = [];
+      });
+    }
+  }
+
+  Future<void> _refreshVideos() async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('videos')
+          .orderBy('createdAt', descending: true)
+          .get();
+
+      final loaded = snapshot.docs
+          .map((doc) => doc.data())
+          .toList()
+          .cast<Map<String, dynamic>>();
+
+      loaded.shuffle();
+
+      // Обновляем глобальный кеш и локальные списки
+      globalVideosCache = List<Map<String, dynamic>>.from(loaded);
+
+      setState(() {
+        videos = List<Map<String, dynamic>>.from(loaded);
+        // Если есть активный поиск — применяем фильтр к новым данным
+        if (searchQuery.isNotEmpty) {
+          filteredVideos = videos.where((video) {
+            final title = (video['title'] ?? "").toString().toLowerCase();
+            final category = (video['category'] ?? "").toString().toLowerCase();
+            final categoryId = (video['categoryId'] ?? "").toString().toLowerCase();
+            return title.contains(searchQuery) ||
+                category.contains(searchQuery) ||
+                categoryId.contains(searchQuery);
+          }).toList();
+        } else {
+          filteredVideos = List<Map<String, dynamic>>.from(videos);
+        }
+      });
+    } catch (e) {
+      // Ошибка при обновлении
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Ошибка при обновлении')),
+        );
+      }
+    }
   }
 
   void updateSearch(String query) {
@@ -66,9 +117,9 @@ class _HomePageState extends State<HomePage> {
         searchQuery = query.toLowerCase();
 
         filteredVideos = videos.where((video) {
-          final title = (video['title'] ?? "").toLowerCase();
-          final category = (video['category'] ?? "").toLowerCase();
-          final categoryId = (video['categoryId'] ?? "").toLowerCase();
+          final title = (video['title'] ?? "").toString().toLowerCase();
+          final category = (video['category'] ?? "").toString().toLowerCase();
+          final categoryId = (video['categoryId'] ?? "").toString().toLowerCase();
 
           return title.contains(searchQuery) ||
               category.contains(searchQuery) ||
@@ -97,10 +148,8 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    // Параметры отступов, используемые для расчёта превью
     const outerHorizontalPadding = 30.0;
     const cardInnerPadding = 12.0;
-    const black = Color.fromARGB(255, 0, 0, 0);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -151,101 +200,121 @@ class _HomePageState extends State<HomePage> {
 
             const SizedBox(height: 12),
 
+            // RefreshIndicator оборачивает прокручиваемый виджет
             Expanded(
-              child: filteredVideos.isEmpty
-                  ? Center(
-                      child: Text(
-                        "Ничего не найдено",
-                        style: TextStyle(color: cs.onSurface.withAlpha((0.7 * 255).round())),
-                      ),
-                    )
-                  : ListView.builder(
-                      itemCount: filteredVideos.length,
-                      itemBuilder: (context, index) {
-                        final video = filteredVideos[index];
-
-                        // Вычисляем ширину доступного пространства для превью
-                        final screenW = MediaQuery.of(context).size.width;
-                        final availableWidth = screenW - outerHorizontalPadding * 2 - cardInnerPadding * 2;
-                        final thumbHeight = availableWidth * 9 / 16;
-
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => VideoPlayerPage(
-                                  videoUrl: video['videoUrl'],
-                                  title: video['title'],
-                                  category: video['category'],
-                                ),
-                              ),
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: Container(
-                              padding: const EdgeInsets.all(cardInnerPadding),
-                              decoration: BoxDecoration(
-                                color: cs.surface,
-                                borderRadius: BorderRadius.circular(14),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color.fromRGBO(0, 0, 0, 0.05),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 3),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: Container(
-                                      width: double.infinity,
-                                      height: thumbHeight,
-                                      color: cs.surfaceContainerHighest,
-                                      child: video['thumbnailUrl'] != null
-                                          ? Image.network(
-                                              video['thumbnailUrl'],
-                                              fit: BoxFit.cover,
-                                              width: double.infinity,
-                                              height: double.infinity,
-                                            )
-                                          : Center(
-                                              child: Icon(
-                                                Icons.play_circle_fill,
-                                                size: 56,
-                                                color: cs.onSurface.withAlpha((0.7 * 255).round()),
-                                              ),
-                                            ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    video['title'] ?? 'Без названия',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600,
-                                      color: cs.onSurface,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    video['categoryId'] ?? 'Без категории',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: cs.onSurface.withAlpha((0.7 * 255).round()),
-                                    ),
-                                  ),
-                                ],
-                              ),
+              child: RefreshIndicator(
+                onRefresh: _refreshVideos,
+                // ListView внутри обеспечивает прокрутку и работу жеста
+                child: filteredVideos.isEmpty
+                    ? ListView(
+                        // AlwaysScrollableScrollPhysics гарантирует, что жест pull-to-refresh сработает даже при пустом списке
+                        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                        children: [
+                          SizedBox(height: MediaQuery.of(context).size.height * 0.15),
+                          Center(
+                            child: Text(
+                              "Ничего не найдено",
+                              style: TextStyle(color: cs.onSurface.withAlpha((0.7 * 255).round())),
                             ),
                           ),
-                        );
-                      },
-                    ),
+                        ],
+                      )
+                    : ListView.builder(
+                        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                        padding: const EdgeInsets.only(bottom: 16),
+                        itemCount: filteredVideos.length,
+                        itemBuilder: (context, index) {
+                          final video = filteredVideos[index];
+
+                          final screenW = MediaQuery.of(context).size.width;
+                          final availableWidth = screenW - outerHorizontalPadding * 2 - cardInnerPadding * 2;
+                          final thumbHeight = availableWidth * 9 / 16;
+
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => VideoPlayerPage(
+                                    videoUrl: video['videoUrl'],
+                                    title: video['title'],
+                                    category: video['category'],
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: Container(
+                                padding: const EdgeInsets.all(cardInnerPadding),
+                                decoration: BoxDecoration(
+                                  color: cs.surface,
+                                  borderRadius: BorderRadius.circular(14),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color.fromRGBO(0, 0, 0, 0.05),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Container(
+                                        width: double.infinity,
+                                        height: thumbHeight,
+                                        color: cs.surfaceContainerHighest,
+                                        child: (video['thumbnailUrl'] ?? "").toString().isNotEmpty
+                                            ? Image.network(
+                                                video['thumbnailUrl'],
+                                                fit: BoxFit.cover,
+                                                width: double.infinity,
+                                                height: double.infinity,
+                                                errorBuilder: (_, __, ___) => Center(
+                                                  child: Icon(
+                                                    Icons.play_circle_fill,
+                                                    size: 56,
+                                                    color: cs.onSurface.withAlpha((0.7 * 255).round()),
+                                                  ),
+                                                ),
+                                              )
+                                            : Center(
+                                                child: Icon(
+                                                  Icons.play_circle_fill,
+                                                  size: 56,
+                                                  color: cs.onSurface.withAlpha((0.7 * 255).round()),
+                                                ),
+                                              ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      video['title'] ?? 'Без названия',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600,
+                                        color: cs.onSurface,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      video['categoryId'] ?? 'Без категории',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: cs.onSurface.withAlpha((0.7 * 255).round()),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+              ),
             ),
           ],
         ),

@@ -13,13 +13,12 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Отложенный запуск, чтобы layout успел выполниться и MediaQuery был доступен
     WidgetsBinding.instance.addPostFrameCallback((_) => initApp());
   }
 
   Future<void> initApp() async {
     try {
-      // Ждём загрузки, но не дольше 10 секунд
+      // Ждём загрузки не дольше 10 секунд
       await VideoRepository.loadVideos().timeout(const Duration(seconds: 10));
       if (!mounted) return;
       Navigator.pushReplacement(
@@ -29,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
     } catch (e, st) {
       debugPrint('Splash init error: $e\n$st');
       if (!mounted) return;
-      // В случае ошибки всё равно переходим дальше, можно показать экран ошибки вместо этого
+      // В случае ошибки всё равно переходим дальше (экран ошибки вместо)
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const FirstPage()),

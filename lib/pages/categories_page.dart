@@ -14,14 +14,14 @@ class CategoryModel {
 }
 
 final categories = [
-  CategoryModel(id: 'music', name: 'Музыка', icon: Icons.music_note),
-  CategoryModel(id: 'education', name: 'Образование', icon: Icons.school),
-  CategoryModel(id: 'games', name: 'Игры', icon: Icons.sports_esports),
-  CategoryModel(id: 'cooking', name: 'Кулинария', icon: Icons.restaurant),
-  CategoryModel(id: 'design', name: 'Дизайн', icon: Icons.design_services),
-  CategoryModel(id: 'sport', name: 'Спорт', icon: Icons.sports),
-  CategoryModel(id: 'science', name: 'Наука', icon: Icons.science),
-  CategoryModel(id: 'business', name: 'Бизнес', icon: Icons.business_center),
+  CategoryModel(id: 'Музыка', name: 'Музыка', icon: Icons.music_note),
+  CategoryModel(id: 'Образование', name: 'Образование', icon: Icons.school),
+  CategoryModel(id: 'Игры', name: 'Игры', icon: Icons.sports_esports),
+  CategoryModel(id: 'Кулинария', name: 'Кулинария', icon: Icons.restaurant),
+  CategoryModel(id: 'Дизайн', name: 'Дизайн', icon: Icons.design_services),
+  CategoryModel(id: 'Спорт', name: 'Спорт', icon: Icons.sports),
+  CategoryModel(id: 'Наука', name: 'Наука', icon: Icons.science),
+  CategoryModel(id: 'Бизнес', name: 'Бизнес', icon: Icons.business_center),
 ];
 
 class CategoriesPage extends StatelessWidget {

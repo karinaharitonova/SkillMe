@@ -21,21 +21,51 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   late VideoPlayerController _controller;
   bool _isReady = false;
   bool _showUI = true;
+  bool _isPlaying = true;
+  bool _isBuffering = false;
 
   @override
   void initState() {
     super.initState();
+    _initPlayer();
+  }
 
-    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl))
-      ..initialize().then((_) {
-        _controller.setLooping(true);
-        _controller.play();
-        setState(() => _isReady = true);
+  Future<void> _initPlayer() async {
+    print('🎬 Загрузка видео: ${widget.videoUrl}');
+    
+    try {
+      _controller = VideoPlayerController.networkUrl(
+        Uri.parse(widget.videoUrl),
+      );
+
+      print('Инициализация...');
+      await _controller.initialize();
+      print('Готово!');
+      
+      _controller.addListener(() {
+        if (mounted) {
+          setState(() {
+            _isPlaying = _controller.value.isPlaying;
+            _isBuffering = _controller.value.isBuffering;
+          });
+        }
       });
 
-    _controller.addListener(() {
-      if (mounted) setState(() {});
-    });
+      _controller.setLooping(true);
+      await _controller.play();
+      print('Воспроизведение начато');
+
+      if (mounted) {
+        setState(() => _isReady = true);
+      }
+    } catch (e) {
+      print('Ошибка: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ошибка загрузки: $e')),
+        );
+      }
+    }
   }
 
   @override
@@ -46,6 +76,16 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
   void toggleUI() {
     setState(() => _showUI = !_showUI);
+  }
+
+  void togglePlayPause() {
+    setState(() {
+      if (_controller.value.isPlaying) {
+        _controller.pause();
+      } else {
+        _controller.play();
+      }
+    });
   }
 
   String _formatTime(Duration d) {
@@ -59,7 +99,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-
       body: Stack(
         children: [
           GestureDetector(
@@ -74,24 +113,27 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
             ),
           ),
 
-          // Верхний градиент
-          if (_showUI)
+          if (_isBuffering)
+            Container(
+              color: Colors.black26,
+              child: const Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              ),
+            ),
+
+          if (_showUI && _isReady)
             Container(
               height: 200,
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black87,
-                    Colors.transparent,
-                  ],
+                  colors: [Colors.black87, Colors.transparent],
                 ),
               ),
             ),
 
-          // Нижний градиент
-          if (_showUI)
+          if (_showUI && _isReady)
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
@@ -100,16 +142,12 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                   gradient: LinearGradient(
                     begin: Alignment.bottomCenter,
                     end: Alignment.topCenter,
-                    colors: [
-                      Colors.black87,
-                      Colors.transparent,
-                    ],
+                    colors: [Colors.black87, Colors.transparent],
                   ),
                 ),
               ),
             ),
 
-          // Кнопка назад
           if (_showUI)
             Positioned(
               top: 40,
@@ -123,8 +161,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
               ),
             ),
 
-
-          // Ползунок перемотки
           if (_showUI && _isReady)
             Positioned(
               left: 20,
@@ -132,19 +168,15 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
               bottom: 100,
               child: Column(
                 children: [
-                  Slider(
-                    activeColor: Colors.white,
-                    inactiveColor: Colors.white30,
-                    value: _controller.value.position.inSeconds
-                        .toDouble()
-                        .clamp(0, _controller.value.duration.inSeconds.toDouble()),
-                    min: 0,
-                    max: _controller.value.duration.inSeconds.toDouble(),
-                    onChanged: (value) {
-                      _controller.seekTo(Duration(seconds: value.toInt()));
-                    },
+                  VideoProgressIndicator(
+                    _controller,
+                    allowScrubbing: true,
+                    colors: const VideoProgressColors(
+                      playedColor: Colors.white,
+                      bufferedColor: Colors.white30,
+                      backgroundColor: Colors.white10,
+                    ),
                   ),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -162,8 +194,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
               ),
             ),
 
-          // Название и категория
-          if (_showUI)
+          if (_showUI && _isReady)
             Positioned(
               left: 20,
               bottom: 40,
@@ -177,44 +208,29 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
-                      shadows: [
-                        Shadow(
-                          blurRadius: 10,
-                          color: Colors.black,
-                        ),
-                      ],
+                      shadows: [Shadow(blurRadius: 10, color: Colors.black)],
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     widget.category ?? "",
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.white70,
-                    ),
+                    style: const TextStyle(fontSize: 16, color: Colors.white70),
                   ),
                 ],
               ),
             ),
 
-          // Play / Pause
           if (_showUI && _isReady)
             Center(
               child: IconButton(
                 iconSize: 70,
                 icon: Icon(
-                  _controller.value.isPlaying
+                  _isPlaying
                       ? Icons.pause_circle_filled
                       : Icons.play_circle_fill,
                   color: Colors.white70,
                 ),
-                onPressed: () {
-                  setState(() {
-                    _controller.value.isPlaying
-                        ? _controller.pause()
-                        : _controller.play();
-                  });
-                },
+                onPressed: togglePlayPause,
               ),
             ),
         ],

@@ -5,7 +5,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
+  sdk: '>=3.10.0 <4.0.0'
 
 dependencies:
   flutter:
@@ -18,9 +18,8 @@ dependencies:
   image_picker: ^1.1.2
   supabase_flutter: ^2.3.4
   cloud_firestore: ^6.3.0
-  video_player: ^2.8.2
+  video_player: ^2.11.1
   flutter_web_auth_2: ^5.0.2
-  http: ^1.2.0
   connectivity_plus: ^6.0.0
   firebase_messaging: ^16.2.2
   provider: ^6.0.5
@@ -39,16 +38,16 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "lib/assets/images/Android Medium - 5.png"
-  adaptive_icon_background: "lib/assets/images/Android Medium - 2.png"
-  adaptive_icon_foreground: "lib/assets/images/Android Medium - 1.png"
+  image_path: "lib/assets/images/Android_Medium_5.png"
+  adaptive_icon_background: "lib/assets/images/Android_Medium_2.png"
+  adaptive_icon_foreground: "lib/assets/images/Android_Medium_1.png"
 
 flutter_native_splash:
   color: "#FFFFFF"                       
-  image: "lib/assets/images/icons.png"     
+  image: "lib/assets/images/Android_Medium_5.png"     
 
   android_12:
-    image: "lib/assets/images/icons.png"   
+    image: "lib/assets/images/Android_Medium_5.png"   
     icon_background_color: "#FFFFFF"
 
   ios: true

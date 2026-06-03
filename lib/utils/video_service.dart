@@ -1,31 +1,45 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:http/http.dart' as http;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class VideoService {
   final supabase = Supabase.instance.client;
 
-  Future<String> uploadVideoFromUrl(String url, String fileName) async {
-    // 1. Скачиваем видео
-    final response = await http.get(Uri.parse(url));
-
-    if (response.statusCode != 200) {
-      throw Exception('Не удалось скачать видео');
-    }
-
-    final bytes = response.bodyBytes;
-    final storagePath = 'videos/$fileName';
-
-    // 2. Загружаем в Supabase
-    await supabase.storage.from('videos').uploadBinary(
-      storagePath,
-      bytes,
-      fileOptions: const FileOptions(
-        contentType: 'video/mp4',
-        upsert: true,
-      ),
+  /// Только загрузка в Storage
+  Future<String> uploadVideoToStorage(String url, String fileName) async {
+    final response = await supabase.functions.invoke(
+      'import-video',
+      body: {
+        'stockUrl': url,
+        'fileName': fileName,
+      },
     );
 
-    // 3. Получаем публичный URL
-    return supabase.storage.from('videos').getPublicUrl(storagePath);
+    if (response.data == null) {
+      throw Exception('Сервер вернул пустой ответ');
+    }
+
+    if (response.data['success'] != true) {
+      final error = response.data['error'] ?? 'Неизвестная ошибка';
+      throw Exception('Ошибка: $error');
+    }
+
+    return response.data['url'];
+  }
+
+  Future<void> addVideoToFirestore({
+    required String title,
+    required String categoryId,
+    required String videoUrl,
+    required String thumbnailUrl,
+    required int duration,
+  }) async {
+    await FirebaseFirestore.instance.collection('videos').add({
+      'title': title,
+      'categoryId': categoryId,
+      'videoUrl': videoUrl,
+      'thumbnailUrl': thumbnailUrl,
+      'duration': duration,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
   }
 }

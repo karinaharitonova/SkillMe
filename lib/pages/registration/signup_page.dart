@@ -86,7 +86,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
       body: Stack(
         children: [
-          // ⭐ Фон
+          // Фон
           Positioned.fill(
             child: Image.asset(
               'lib/assets/images/Registr.png',
@@ -113,7 +113,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // ⭐ Назад
+                            // Назад
                             IconButton(
                               padding: EdgeInsets.zero,
                               icon: const Icon(Icons.arrow_back),
@@ -125,7 +125,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                             SizedBox(height: height * 0.04),
 
-                            // ⭐ Логотип
+                            //  Логотип
                             Center(
                               child: Text(
                                 'SkillMe',
@@ -139,7 +139,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                             SizedBox(height: height * 0.06),
 
-                            // ⭐ Email
+                            // Email
                             _buildGradientField(
                               controller: emailController,
                               hint: 'Введите Email',
@@ -153,7 +153,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                             SizedBox(height: height * 0.025),
 
-                            // ⭐ Пароль
+                            // Пароль
                             _buildGradientField(
                               controller: passwordController,
                               hint: 'Введите пароль',
@@ -177,7 +177,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                             SizedBox(height: height * 0.025),
 
-                            // ⭐ Повтор пароля
+                            //  Повтор пароля
                             _buildGradientField(
                               controller: repeatPasswordController,
                               hint: 'Повторите пароль',
@@ -201,7 +201,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                             SizedBox(height: height * 0.05),
 
-                            // ⭐ Кнопка регистрации
+                            // Кнопка регистрации
                             SizedBox(
                               width: double.infinity,
                               height: height * 0.065,
@@ -226,7 +226,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
                             SizedBox(height: height * 0.03),
 
-                            // ⭐ Уже есть аккаунт
                             Center(
                               child: GestureDetector(
                                 onTap: () =>
@@ -256,7 +255,6 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  // ⭐ Универсальный адаптивный градиентный input
   Widget _buildGradientField({
     required TextEditingController controller,
     required String hint,

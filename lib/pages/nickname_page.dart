@@ -1,7 +1,45 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import '../model/profile.dart';
+import '../utils/user_preferences.dart';
 
-class NicknamePage extends StatelessWidget {
+class NicknamePage extends StatefulWidget {
   const NicknamePage({super.key});
+
+  @override
+  State<NicknamePage> createState() => _NicknamePageState();
+}
+
+class _NicknamePageState extends State<NicknamePage> {
+  final nameController = TextEditingController();
+  final nicknameController = TextEditingController();
+  String? photoPath;
+
+  Future<void> pickPhoto() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery);
+
+    if (picked != null) {
+      setState(() => photoPath = picked.path);
+    }
+  }
+
+  Future<void> saveProfile() async {
+    final newUser = Profile(
+      name: nameController.text,
+      about: "Расскажите о себе",
+      imagePath: photoPath ?? "",
+      email: "",
+      nickname: nicknameController.text,
+      isDarkMode: false, 
+    );
+
+    await UserPreferences.setUser(newUser);
+
+    if (!mounted) return;
+    Navigator.pushReplacementNamed(context, "/account");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +70,6 @@ class NicknamePage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-
-            // Верхняя голубая часть
             Container(
               width: double.infinity,
               padding: const EdgeInsets.only(top: 40, bottom: 40),
@@ -50,48 +86,29 @@ class NicknamePage extends StatelessWidget {
 
               child: Column(
                 children: [
-
-                  // Кнопка добавления фото
-                  Container(
-                    height: 120,
-                    width: 120,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.3),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Container(
-                        height: 90,
-                        width: 90,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.camera_alt,
-                          color: Colors.blue,
-                          size: 40,
-                        ),
-                      ),
+                  GestureDetector(
+                    onTap: pickPhoto,
+                    child: CircleAvatar(
+                      radius: 60,
+                      backgroundImage:
+                          photoPath != null ? FileImage(File(photoPath!)) : null,
+                      child: photoPath == null
+                          ? const Icon(Icons.camera_alt, size: 40, color: Colors.blue)
+                          : null,
                     ),
                   ),
 
                   const SizedBox(height: 30),
 
-                  // Поле "Введите имя"
-                  _inputField("Введите имя"),
-
+                  _inputField("Введите имя", nameController),
                   const SizedBox(height: 15),
-
-                  // Поле "Введите никнейм"
-                  _inputField("Введите никнейм"),
+                  _inputField("Введите никнейм", nicknameController),
                 ],
               ),
             ),
 
             const SizedBox(height: 40),
 
-            // Кнопка "Продолжить"
             SizedBox(
               width: 250,
               height: 55,
@@ -102,15 +119,10 @@ class NicknamePage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/account');
-                },
+                onPressed: saveProfile,
                 child: const Text(
                   "Продолжить",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                  ),
+                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
             ),
@@ -122,7 +134,7 @@ class NicknamePage extends StatelessWidget {
     );
   }
 
-  Widget _inputField(String hint) {
+  Widget _inputField(String hint, TextEditingController controller) {
     return Container(
       width: 300,
       height: 50,
@@ -131,6 +143,7 @@ class NicknamePage extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: TextField(
+        controller: controller,
         decoration: InputDecoration(
           hintText: hint,
           border: InputBorder.none,

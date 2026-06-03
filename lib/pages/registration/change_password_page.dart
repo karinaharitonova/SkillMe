@@ -169,7 +169,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Назад + Заголовок
                       Row(
   children: [
     IconButton(
@@ -180,7 +179,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       onPressed: () => Navigator.pop(context),
     ),
     const SizedBox(width: 12),
-    // Expanded + FittedBox гарантируют, что заголовок не выйдет за экран
     Expanded(
       child: FittedBox(
         fit: BoxFit.scaleDown,
@@ -188,7 +186,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         child: Text(
           'ИЗМЕНИТЬ ПАРОЛЬ',
           style: TextStyle(
-            fontSize: 28, // базовый размер, FittedBox уменьшит при необходимости
+            fontSize: 28, 
             fontWeight: FontWeight.bold,
           ),
         ),
