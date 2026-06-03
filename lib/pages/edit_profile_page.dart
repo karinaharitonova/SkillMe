@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../utils/user_preferences.dart';
+import 'package:myapp/utils/app_strings.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -53,9 +54,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     return Scaffold(
       appBar: AppBar(
-        /*title: const Text(
-          'РЕДАКТИРОВАТЬ ПРОФИЛЬ',
-          style: TextStyle(
+        /*title: Text(
+          AppStrings.get('account_edit_profile').toUpperCase(),
+          style: const TextStyle(
             fontSize: 23,
             fontWeight: FontWeight.bold,
           ),
@@ -113,7 +114,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               child: TextField(
                 controller: nameController,
                 decoration: InputDecoration(
-                  labelText: "Имя",
+                  labelText: AppStrings.get('account_name'),
                   labelStyle: const TextStyle(color: Colors.black),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(
@@ -144,7 +145,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               child: TextField(
                 controller: nicknameController,
                 decoration: InputDecoration(
-                  labelText: "Никнейм",
+                  labelText: AppStrings.get('account_nickname'),
                   labelStyle: const TextStyle(color: Colors.black),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(
@@ -185,10 +186,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
                     ],
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
-                      "Сохранить",
-                      style: TextStyle(
+                      AppStrings.get('save'),
+                      style: const TextStyle(
                         fontSize: 20,
                         color: Colors.white,
                         fontWeight: FontWeight.w700,

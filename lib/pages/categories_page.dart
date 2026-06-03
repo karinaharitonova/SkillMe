@@ -1,27 +1,31 @@
 import 'package:flutter/material.dart';
 import 'videos_by_category_page.dart';
+import 'package:myapp/utils/app_strings.dart';
 
 class CategoryModel {
   final String id;
-  final String name;
+  final String nameKey; // Ключ для AppStrings
   final IconData icon;
 
   CategoryModel({
     required this.id,
-    required this.name,
+    required this.nameKey,
     required this.icon,
   });
+
+  // Получаем переведённое название
+  String get name => AppStrings.get(nameKey);
 }
 
 final categories = [
-  CategoryModel(id: 'Музыка', name: 'Музыка', icon: Icons.music_note),
-  CategoryModel(id: 'Образование', name: 'Образование', icon: Icons.school),
-  CategoryModel(id: 'Игры', name: 'Игры', icon: Icons.sports_esports),
-  CategoryModel(id: 'Кулинария', name: 'Кулинария', icon: Icons.restaurant),
-  CategoryModel(id: 'Дизайн', name: 'Дизайн', icon: Icons.design_services),
-  CategoryModel(id: 'Спорт', name: 'Спорт', icon: Icons.sports),
-  CategoryModel(id: 'Наука', name: 'Наука', icon: Icons.science),
-  CategoryModel(id: 'Бизнес', name: 'Бизнес', icon: Icons.business_center),
+  CategoryModel(id: 'Музыка', nameKey: 'category_music', icon: Icons.music_note),
+  CategoryModel(id: 'Образование', nameKey: 'category_education', icon: Icons.school),
+  CategoryModel(id: 'Игры', nameKey: 'category_games', icon: Icons.sports_esports),
+  CategoryModel(id: 'Кулинария', nameKey: 'category_cooking', icon: Icons.restaurant),
+  CategoryModel(id: 'Дизайн', nameKey: 'category_design', icon: Icons.design_services),
+  CategoryModel(id: 'Спорт', nameKey: 'category_sport', icon: Icons.sports),
+  CategoryModel(id: 'Наука', nameKey: 'category_science', icon: Icons.science),
+  CategoryModel(id: 'Бизнес', nameKey: 'category_business', icon: Icons.business_center),
 ];
 
 class CategoriesPage extends StatelessWidget {
@@ -38,9 +42,9 @@ class CategoriesPage extends StatelessWidget {
             children: [
               const SizedBox(height: 10),
 
-              const Text(
-                'КАТЕГОРИИ',
-                style: TextStyle(
+              Text(
+                AppStrings.get('categories_title').toUpperCase(),
+                style: const TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
                 ),
@@ -67,9 +71,9 @@ class CategoriesPage extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => VideosByCategoryPage(
-  categoryId: category.id,
-  categoryTitle: category.name,
-)
+                              categoryId: category.id,
+                              categoryTitle: category.name,
+                            ),
                           ),
                         );
                       },
@@ -91,6 +95,7 @@ class CategoriesPage extends StatelessWidget {
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
                             ),
+                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),

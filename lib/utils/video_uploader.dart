@@ -7,7 +7,7 @@ class VideoService {
 
   /// Загружаем видео через Edge Function (сервер сам скачивает и кладет в Storage)
   Future<String> uploadVideoFromUrl(String url, String fileName) async {
-    print('🚀 Отправляем запрос на Edge Function...');
+    print('Отправляем запрос на Edge Function...');
     
     // Вызываем Edge Function 'import-video'
     final response = await supabase.functions.invoke(
@@ -29,12 +29,12 @@ class VideoService {
     }
 
     final publicUrl = response.data['url'];
-    print('✅ Видео загружено! URL: $publicUrl');
+    print('Видео загружено! URL: $publicUrl');
     
     return publicUrl;
   }
 
-  /// Сохраняем документ в Firestore (этот метод не меняется)
+  /// Сохраняем документ в Firestore
   Future<void> saveVideoToFirestore({
     required String title,
     required String categoryId,
@@ -50,7 +50,7 @@ class VideoService {
       'duration': duration,
       'createdAt': FieldValue.serverTimestamp(),
     });
-    print('✅ Документ сохранен в Firestore');
+    print('Документ сохранен в Firestore');
   }
 
   Future<void> addVideo({
@@ -71,6 +71,6 @@ class VideoService {
       duration: duration,
     );
     
-    print('🎉 Видео добавлено успешно!');
+    print('Видео добавлено успешно!');
   }
 }

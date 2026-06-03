@@ -57,7 +57,6 @@ class ProfileWidget extends StatelessWidget {
       ),
     );
 
-    // Если редактируемый и есть обработчик — делаем InkWell по аватару
     if (editable && onClicked != null) {
       return GestureDetector(
         onTap: onClicked,

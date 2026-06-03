@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/pages/snack_bar.dart';
 import 'package:myapp/services/yandex_auth.dart';
+import 'package:myapp/utils/app_strings.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -35,16 +36,16 @@ class _LoginPageState extends State<LoginPage> {
         password: passwordController.text.trim(),
       );
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+      if (e.code == 'user-not-found' || e.code == 'wrong-password' || e.code == 'invalid-credential') {
         SnackBarService.showSnackBar(
           context,
-          'Неправильный email или пароль. Повторите попытку',
+          AppStrings.get('login_error_invalid'),
           true,
         );
       } else {
         SnackBarService.showSnackBar(
           context,
-          'Неизвестная ошибка! Попробуйте еще раз.',
+          AppStrings.get('login_error_unknown'),
           true,
         );
       }
@@ -138,10 +139,11 @@ class _LoginPageState extends State<LoginPage> {
                                 validator: (email) =>
                                     email != null &&
                                             !EmailValidator.validate(email)
-                                        ? 'Введите корректный Email'
+                                        ? AppStrings.get('email_invalid')
                                         : null,
                                 decoration: InputDecoration(
-                                  hintText: 'Введите Email',
+                                  hintText: AppStrings.get('email_hint'),
+                                  hintStyle: const TextStyle(color: Colors.black),
                                   contentPadding: EdgeInsets.symmetric(
                                     horizontal: width * 0.05,
                                     vertical: height * 0.02,
@@ -175,10 +177,11 @@ class _LoginPageState extends State<LoginPage> {
                                 obscureText: isHiddenPassword,
                                 validator: (value) =>
                                     value != null && value.length < 6
-                                        ? 'Минимум 6 символов'
+                                        ? AppStrings.get('password_min_length')
                                         : null,
                                 decoration: InputDecoration(
-                                  hintText: 'Введите пароль',
+                                  hintText: AppStrings.get('password_hint'),
+                                  hintStyle: const TextStyle(color: Colors.black),
                                   contentPadding: EdgeInsets.symmetric(
                                     horizontal: width * 0.05,
                                     vertical: height * 0.02,
@@ -217,7 +220,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 onPressed: login,
                                 child: Text(
-                                  'Войти',
+                                  AppStrings.get('auth_sign_in'),
                                   style: TextStyle(
                                     fontSize: width * 0.05,
                                     color: Colors.white,
@@ -256,9 +259,9 @@ class _LoginPageState extends State<LoginPage> {
                               child: TextButton(
                                 onPressed: () => Navigator.of(context)
                                     .pushNamed('/reset_password'),
-                                child: const Text(
-                                  'Сбросить пароль',
-                                  style: TextStyle(
+                                child: Text(
+                                  AppStrings.get('account_reset_password'),
+                                  style: const TextStyle(
                                     decoration: TextDecoration.underline,
                                     color: Colors.black,
                                   ),
@@ -272,9 +275,9 @@ class _LoginPageState extends State<LoginPage> {
                               child: GestureDetector(
                                 onTap: () =>
                                     Navigator.of(context).pushNamed('/signup'),
-                                child: const Text(
-                                  'Еще нет аккаунта? Регистрация',
-                                  style: TextStyle(
+                                child: Text(
+                                  AppStrings.get('no_account_register'),
+                                  style: const TextStyle(
                                     decoration: TextDecoration.underline,
                                     color: Colors.black,
                                   ),

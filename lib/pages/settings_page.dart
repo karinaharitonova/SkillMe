@@ -8,6 +8,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:myapp/utils/theme_provider.dart';
 import 'package:myapp/utils/language_provider.dart';
 import 'package:myapp/utils/user_preferences.dart';
+import 'package:myapp/utils/app_strings.dart';
 import 'package:myapp/pages/admin_upload_page.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -39,16 +40,16 @@ class _SettingsPageState extends State<SettingsPage> {
       final confirm = await showDialog<bool>(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text("Отключить уведомления"),
-          content: const Text("Вы действительно хотите отписаться от уведомлений?"),
+          title: Text(AppStrings.get('settings_disable_notifications')),
+          content: Text(AppStrings.get('settings_disable_notifications_confirm')),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text("Нет"),
+              child: Text(AppStrings.get('no')),
             ),
             TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text("Да"),
+              child: Text(AppStrings.get('yes')),
             ),
           ],
         ),
@@ -98,16 +99,24 @@ class _SettingsPageState extends State<SettingsPage> {
       builder: (context) {
         String input = '';
         return AlertDialog(
-          title: const Text('Введите пароль'),
+          title: Text(AppStrings.get('settings_enter_password')),
           content: TextField(
             autofocus: true,
             obscureText: true,
             onChanged: (v) => input = v,
-            decoration: const InputDecoration(hintText: 'Пароль'),
+            decoration: InputDecoration(
+              hintText: AppStrings.get('settings_password_hint'),
+            ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Отмена')),
-            TextButton(onPressed: () => Navigator.pop(context, input), child: const Text('ОК')),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(AppStrings.get('cancel')),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, input),
+              child: Text(AppStrings.get('ok')),
+            ),
           ],
         );
       },
@@ -122,9 +131,17 @@ class _SettingsPageState extends State<SettingsPage> {
     } else {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Неверный пароль')),
+        SnackBar(content: Text(AppStrings.get('settings_wrong_password'))),
       );
     }
+  }
+
+  // Перезапуск приложения после смены языка
+  void _restartApp() {
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      '/first',
+      (route) => false,
+    );
   }
 
   @override
@@ -135,141 +152,154 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Настройки"),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          const Text(
-            "Профиль",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    return Consumer<LanguageProvider>(
+      builder: (context, languageProvider, child) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(AppStrings.get('settings_title')),
           ),
+          body: ListView(
+            padding: const EdgeInsets.all(20),
+            children: [
+              Text(
+                AppStrings.get('settings_section_profile'),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
 
-          const SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-          ListTile(
-            leading: const Icon(Icons.person),
-            title: const Text("Редактировать профиль"),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {
-              Navigator.pushNamed(context, '/edit-profile');
-            },
-          ),
+              ListTile(
+                leading: const Icon(Icons.person),
+                title: Text(AppStrings.get('account_edit_profile')),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () {
+                  Navigator.pushNamed(context, '/edit-profile');
+                },
+              ),
 
-          const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-          const Text(
-            "Приложение",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
+              Text(
+                AppStrings.get('settings_section_app'),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
 
-          SwitchListTile(
-            title: const Text("Уведомления"),
-            value: notificationsEnabled,
-            onChanged: toggleNotifications,
-            activeColor: const Color(0xFF5D65D6),
-            activeTrackColor: const Color(0xFFCBDDFD),
-            secondary: const Icon(Icons.notifications),
-          ),
+              SwitchListTile(
+                title: Text(AppStrings.get('settings_notifications')),
+                value: notificationsEnabled,
+                onChanged: toggleNotifications,
+                activeColor: const Color(0xFF5D65D6),
+                activeTrackColor: const Color(0xFFCBDDFD),
+                secondary: const Icon(Icons.notifications),
+              ),
 
-          SwitchListTile(
-            title: const Text("Тёмная тема"),
-            value: context.watch<ThemeProvider>().isDark,
-            onChanged: (value) {
-              context.read<ThemeProvider>().toggleTheme(value);
-            },
-            secondary: const Icon(Icons.dark_mode),
-            activeColor: const Color(0xFF5D65D6),
-            activeTrackColor: const Color(0xFFCBDDFD),
-          ),
+              SwitchListTile(
+                title: Text(AppStrings.get('settings_theme_dark')),
+                value: context.watch<ThemeProvider>().isDark,
+                onChanged: (value) {
+                  context.read<ThemeProvider>().toggleTheme(value);
+                },
+                secondary: const Icon(Icons.dark_mode),
+                activeColor: const Color(0xFF5D65D6),
+                activeTrackColor: const Color(0xFFCBDDFD),
+              ),
 
-          ListTile(
-            leading: const Icon(Icons.language),
-            title: const Text("Язык"),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (_) => _buildLanguageSheet(context),
-              );
-            },
-          ),
-
-          const SizedBox(height: 20),
-
-          const Text(
-            "Аккаунт",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-
-          ListTile(
-            leading: const Icon(Icons.lock),
-            title: const Text("Сменить пароль"),
-            onTap: () {
-              Navigator.pushNamed(context, '/change-password');
-            },
-          ),
-
-          ListTile(
-            leading: const Icon(Icons.delete_forever, color: Colors.red),
-            title: const Text(
-              "Удалить аккаунт",
-              style: TextStyle(color: Colors.red),
-            ),
-            onTap: () async {
-              final confirm = await showDialog<bool>(
-                context: context,
-                builder: (_) => AlertDialog(
-                  title: const Text("Подтвердите удаление"),
-                  content: const Text("Вы уверены, что хотите удалить аккаунт? Это действие нельзя отменить."),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: const Text("Отмена"),
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                      onPressed: () => Navigator.pop(context, true),
-                      child: const Text("Удалить"),
-                    ),
-                  ],
+              ListTile(
+                leading: const Icon(Icons.language),
+                title: Text(AppStrings.get('settings_language')),
+                subtitle: Text(
+                  languageProvider.currentLanguage == 'ru' 
+                      ? AppStrings.get('language_russian')
+                      : AppStrings.get('language_english'),
                 ),
-              );
-
-              if (confirm == true) {
-                try {
-                  await FirebaseAuth.instance.currentUser?.delete();
-                  Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Ошибка при удалении аккаунта: $e")),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (_) => _buildLanguageSheet(context),
                   );
-                }
-              }
-            },
-          ),
+                },
+              ),
 
-          const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-          const Text(
-            "О приложении",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
+              Text(
+                AppStrings.get('settings_section_account'),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
 
-          GestureDetector(
-            onLongPress: _onSecretTriggered,
-            onTap: _onVersionTileTap,
-            child: const ListTile(
-              leading: Icon(Icons.info),
-              title: Text("Версия приложения"),
-              subtitle: Text("1.0.0"),
-              trailing: Icon(Icons.arrow_forward_ios, size: 16),
-            ),
+              ListTile(
+                leading: const Icon(Icons.lock),
+                title: Text(AppStrings.get('account_change_password')),
+                onTap: () {
+                  Navigator.pushNamed(context, '/change-password');
+                },
+              ),
+
+              ListTile(
+                leading: const Icon(Icons.delete_forever, color: Colors.red),
+                title: Text(
+                  AppStrings.get('settings_delete_account'),
+                  style: const TextStyle(color: Colors.red),
+                ),
+                onTap: () async {
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: Text(AppStrings.get('settings_confirm_delete')),
+                      content: Text(AppStrings.get('settings_delete_warning')),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: Text(AppStrings.get('cancel')),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                          onPressed: () => Navigator.pop(context, true),
+                          child: Text(AppStrings.get('delete')),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  if (confirm == true) {
+                    try {
+                      await FirebaseAuth.instance.currentUser?.delete();
+                      if (context.mounted) {
+                        Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('${AppStrings.get('settings_delete_error')}: $e')),
+                        );
+                      }
+                    }
+                  }
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              Text(
+                AppStrings.get('settings_about'),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+
+              GestureDetector(
+                onLongPress: _onSecretTriggered,
+                onTap: _onVersionTileTap,
+                child: ListTile(
+                  leading: const Icon(Icons.info),
+                  title: Text(AppStrings.get('settings_version')),
+                  subtitle: const Text("1.0.0"),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -279,25 +309,37 @@ class _SettingsPageState extends State<SettingsPage> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
-            "Выберите язык",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          Text(
+            AppStrings.get('settings_choose_language'),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 20),
           ListTile(
             leading: const Icon(Icons.flag),
-            title: const Text("Русский"),
-            onTap: () {
-              context.read<LanguageProvider>().setLanguage('ru');
-              Navigator.pop(context);
+            title: Text(AppStrings.get('language_russian')),
+            trailing: context.watch<LanguageProvider>().currentLanguage == 'ru'
+                ? const Icon(Icons.check, color: Colors.green)
+                : null,
+            onTap: () async {
+              await context.read<LanguageProvider>().setLanguage('ru');
+              if (context.mounted) {
+                Navigator.pop(context);
+                _restartApp();
+              }
             },
           ),
           ListTile(
             leading: const Icon(Icons.flag_outlined),
-            title: const Text("English"),
-            onTap: () {
-              context.read<LanguageProvider>().setLanguage('en');
-              Navigator.pop(context);
+            title: Text(AppStrings.get('language_english')),
+            trailing: context.watch<LanguageProvider>().currentLanguage == 'en'
+                ? const Icon(Icons.check, color: Colors.green)
+                : null,
+            onTap: () async {
+              await context.read<LanguageProvider>().setLanguage('en');
+              if (context.mounted) {
+                Navigator.pop(context);
+                _restartApp();
+              }
             },
           ),
         ],

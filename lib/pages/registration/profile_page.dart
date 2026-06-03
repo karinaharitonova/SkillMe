@@ -3,6 +3,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/pages/snack_bar.dart';
+import 'package:myapp/utils/app_strings.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final apiKey = dotenv.env['API_KEY'];
@@ -38,16 +39,16 @@ class _ProfilePageState extends State<ProfilePage> {
         password: passwordController.text.trim(),
       );
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+      if (e.code == 'user-not-found' || e.code == 'wrong-password' || e.code == 'invalid-credential') {
         SnackBarService.showSnackBar(
           context,
-          'Неправильный email или пароль. Повторите попытку',
+          AppStrings.get('login_error_invalid'),
           true,
         );
       } else {
         SnackBarService.showSnackBar(
           context,
-          'Неизвестная ошибка! Попробуйте еще раз.',
+          AppStrings.get('login_error_unknown'),
           true,
         );
       }
@@ -66,7 +67,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: const Text('Войти'),
+        title: Text(AppStrings.get('auth_sign_in')),
       ),
 
       body: SafeArea(
@@ -93,10 +94,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           keyboardType: TextInputType.emailAddress,
                           validator: (email) =>
                               email != null && !EmailValidator.validate(email)
-                                  ? 'Введите правильный Email'
+                                  ? AppStrings.get('email_invalid')
                                   : null,
                           decoration: InputDecoration(
-                            hintText: 'Введите Email',
+                            hintText: AppStrings.get('email_hint'),
                             contentPadding: EdgeInsets.symmetric(
                               horizontal: width * 0.05,
                               vertical: height * 0.02,
@@ -115,10 +116,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           obscureText: isHiddenPassword,
                           validator: (value) =>
                               value != null && value.length < 6
-                                  ? 'Минимум 6 символов'
+                                  ? AppStrings.get('password_min_length')
                                   : null,
                           decoration: InputDecoration(
-                            hintText: 'Введите пароль',
+                            hintText: AppStrings.get('password_hint'),
                             contentPadding: EdgeInsets.symmetric(
                               horizontal: width * 0.05,
                               vertical: height * 0.02,
@@ -157,7 +158,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             onPressed: login,
                             child: Text(
-                              'Войти',
+                              AppStrings.get('auth_sign_in'),
                               style: TextStyle(
                                 fontSize: width * 0.05,
                                 color: Colors.white,
@@ -172,9 +173,9 @@ class _ProfilePageState extends State<ProfilePage> {
                         TextButton(
                           onPressed: () =>
                               Navigator.of(context).pushNamed('/signup'),
-                          child: const Text(
-                            'Регистрация',
-                            style: TextStyle(
+                          child: Text(
+                            AppStrings.get('auth_register'),
+                            style: const TextStyle(
                               decoration: TextDecoration.underline,
                             ),
                           ),
@@ -184,9 +185,9 @@ class _ProfilePageState extends State<ProfilePage> {
                         TextButton(
                           onPressed: () =>
                               Navigator.of(context).pushNamed('/reset_password'),
-                          child: const Text(
-                            'Сбросить пароль',
-                            style: TextStyle(
+                          child: Text(
+                            AppStrings.get('account_reset_password'),
+                            style: const TextStyle(
                               decoration: TextDecoration.underline,
                             ),
                           ),

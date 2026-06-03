@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:myapp/utils/app_strings.dart';
 import 'video_player_page.dart';
 
 List<Map<String, dynamic>> globalVideosCache = [];
@@ -80,12 +81,10 @@ class _HomePageState extends State<HomePage> {
 
       loaded.shuffle();
 
-      // Обновляем глобальный кеш и локальные списки
       globalVideosCache = List<Map<String, dynamic>>.from(loaded);
 
       setState(() {
         videos = List<Map<String, dynamic>>.from(loaded);
-        // Если есть активный поиск — применяем фильтр к новым данным
         if (searchQuery.isNotEmpty) {
           filteredVideos = videos.where((video) {
             final title = (video['title'] ?? "").toString().toLowerCase();
@@ -100,10 +99,9 @@ class _HomePageState extends State<HomePage> {
         }
       });
     } catch (e) {
-      // Ошибка при обновлении
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Ошибка при обновлении')),
+          SnackBar(content: Text(AppStrings.get('error_refresh'))),
         );
       }
     }
@@ -177,7 +175,7 @@ class _HomePageState extends State<HomePage> {
                 cursorColor: const Color.fromARGB(255, 0, 0, 0),
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.search, color: Color.fromARGB(255, 0, 0, 0)),
-                  hintText: 'Поиск',
+                  hintText: AppStrings.get('search'),
                   border: InputBorder.none,
                   hintStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
                   filled: false,
@@ -190,7 +188,7 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 30),
 
             Text(
-              'ДЛЯ ВАС',
+              AppStrings.get('home_for_you').toUpperCase(),
               style: textTheme.headlineSmall?.copyWith(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -200,20 +198,17 @@ class _HomePageState extends State<HomePage> {
 
             const SizedBox(height: 12),
 
-            // RefreshIndicator оборачивает прокручиваемый виджет
             Expanded(
               child: RefreshIndicator(
                 onRefresh: _refreshVideos,
-                // ListView внутри обеспечивает прокрутку и работу жеста
                 child: filteredVideos.isEmpty
                     ? ListView(
-                        // AlwaysScrollableScrollPhysics гарантирует, что жест pull-to-refresh сработает даже при пустом списке
                         physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                         children: [
                           SizedBox(height: MediaQuery.of(context).size.height * 0.15),
                           Center(
                             child: Text(
-                              "Ничего не найдено",
+                              AppStrings.get('search_no_results'),
                               style: TextStyle(color: cs.onSurface.withAlpha((0.7 * 255).round())),
                             ),
                           ),
@@ -292,7 +287,7 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
-                                      video['title'] ?? 'Без названия',
+                                      video['title'] ?? AppStrings.get('video_no_title'),
                                       style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w600,
@@ -301,7 +296,7 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      video['categoryId'] ?? 'Без категории',
+                                      video['categoryId'] ?? AppStrings.get('no_category'),
                                       style: TextStyle(
                                         fontSize: 16,
                                         color: cs.onSurface.withAlpha((0.7 * 255).round()),

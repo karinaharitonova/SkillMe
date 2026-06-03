@@ -3,10 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/pages/nickname_page.dart';
 import 'package:myapp/pages/snack_bar.dart';
+import 'package:myapp/utils/app_strings.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final apiKey = dotenv.env['API_KEY'];
-
 
 class EmailPage extends StatefulWidget {
   const EmailPage({super.key});
@@ -69,7 +69,6 @@ class _EmailPageState extends State<EmailPage> {
         SnackBarService.showSnackBar(
           context,
           '$e',
-          //'Неизвестная ошибка! Попробуйте еще раз или обратитесь в поддержку.',
           true,
         );
       }
@@ -82,7 +81,7 @@ class _EmailPageState extends State<EmailPage> {
       : Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: AppBar(
-            title: const Text('Верификация Email адреса'),
+            title: Text(AppStrings.get('email_verification_title')),
           ),
           body: SafeArea(
             child: Padding(
@@ -90,17 +89,18 @@ class _EmailPageState extends State<EmailPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    'Письмо с подтверждением было отправлено на вашу электронную почту.',
-                    style: TextStyle(
+                  Text(
+                    AppStrings.get('email_verification_message'),
+                    style: const TextStyle(
                       fontSize: 20,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton.icon(
                     onPressed: canResendEmail ? sendVerificationEmail : null,
                     icon: const Icon(Icons.email),
-                    label: const Text('Повторно отправить'),
+                    label: Text(AppStrings.get('resend_email')),
                   ),
                   const SizedBox(height: 20),
                   TextButton(
@@ -108,9 +108,9 @@ class _EmailPageState extends State<EmailPage> {
                       timer?.cancel();
                       await FirebaseAuth.instance.currentUser!.delete();
                     },
-                    child: const Text(
-                      'Отменить',
-                      style: TextStyle(
+                    child: Text(
+                      AppStrings.get('cancel'),
+                      style: const TextStyle(
                         color: Colors.blue,
                       ),
                     ),

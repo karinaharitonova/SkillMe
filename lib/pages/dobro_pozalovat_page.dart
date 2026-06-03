@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:myapp/pages/registration/login_page.dart';
+import 'package:myapp/utils/app_strings.dart';
 
 final apiKey = dotenv.env['API_KEY'];
 
@@ -45,9 +46,9 @@ class DobroPozalovatPage extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                const Text(
-                  'Добро \nпожаловать!',
-                  style: TextStyle(
+                Text(
+                  AppStrings.get('welcome_title'),
+                  style: const TextStyle(
                     fontSize: 40,
                     fontFamily: 'Amagro',
                     color: Colors.black,
@@ -60,55 +61,55 @@ class DobroPozalovatPage extends StatelessWidget {
                 const Spacer(flex: 3),
 
                 Center(
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFF282B4A), width: 2),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Color(0xFF282B4A), width: 2),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const LoginPage()),
-                    );
-                  },
-                  child: const Text(
-                    'ВХОД',
-                    style: TextStyle(
-                      fontSize: 35,
-                      fontFamily: 'Amagro',
-                      color: Color(0xFF282B4A),
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              Center(
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFF282B4A), width: 2),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),    
-                    ),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/signup');
-                  },
-                  child: const Text(
-                    'РЕГИСТРАЦИЯ',
-                    style: TextStyle(
-                      fontSize: 35,
-                      fontFamily: 'Amagro',
-                      color: Color(0xFF282B4A),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginPage()),
+                      );
+                    },
+                    child: Text(
+                      AppStrings.get('auth_sign_in').toUpperCase(),
+                      style: const TextStyle(
+                        fontSize: 35,
+                        fontFamily: 'Amagro',
+                        color: Color(0xFF282B4A),
+                      ),
                     ),
                   ),
                 ),
-              ),
+
+                const SizedBox(height: 20),
+
+                Center(
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Color(0xFF282B4A), width: 2),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),    
+                    ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/signup');
+                    },
+                    child: Text(
+                      AppStrings.get('auth_register').toUpperCase(),
+                      style: const TextStyle(
+                        fontSize: 35,
+                        fontFamily: 'Amagro',
+                        color: Color(0xFF282B4A),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

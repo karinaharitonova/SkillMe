@@ -2,6 +2,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/pages/snack_bar.dart';
+import 'package:myapp/utils/app_strings.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key});
@@ -30,16 +31,16 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         email: emailController.text.trim(),
       );
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
+      if (e.code == 'user-not-found' || e.code == 'invalid-email') {
         SnackBarService.showSnackBar(
           context,
-          'Такой email не зарегистрирован!',
+          AppStrings.get('reset_email_not_found'),
           true,
         );
       } else {
         SnackBarService.showSnackBar(
           context,
-          'Ошибка! Попробуйте снова.',
+          AppStrings.get('reset_error_generic'),
           true,
         );
       }
@@ -48,7 +49,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
     SnackBarService.showSnackBar(
       context,
-      'Ссылка для сброса отправлена на почту',
+      AppStrings.get('reset_email_sent'),
       false,
     );
 
@@ -93,11 +94,13 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                               onPressed: () => Navigator.pop(context),
                             ),
                             SizedBox(width: width * 0.03),
-                            Text(
-                              'СБРОС ПАРОЛЯ',
-                              style: TextStyle(
-                                fontSize: width * 0.08,
-                                fontWeight: FontWeight.bold,
+                            Expanded(
+                              child: Text(
+                                AppStrings.get('reset_password_title').toUpperCase(),
+                                style: TextStyle(
+                                  fontSize: width * 0.08,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ],
@@ -124,10 +127,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                             keyboardType: TextInputType.emailAddress,
                             validator: (email) =>
                                 email != null && !EmailValidator.validate(email)
-                                    ? 'Введите корректный Email'
+                                    ? AppStrings.get('email_invalid')
                                     : null,
                             decoration: InputDecoration(
-                              hintText: 'Введите Email',
+                              hintText: AppStrings.get('email_hint'),
+                              hintStyle: const TextStyle(color: Colors.black),
                               contentPadding: EdgeInsets.symmetric(
                                 horizontal: width * 0.05,
                                 vertical: height * 0.02,
@@ -156,7 +160,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                             ),
                             onPressed: resetPassword,
                             child: Text(
-                              'Сбросить пароль',
+                              AppStrings.get('account_reset_password'),
                               style: TextStyle(
                                 fontSize: width * 0.05,
                                 color: Colors.white,

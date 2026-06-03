@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:myapp/utils/app_strings.dart';
 import 'video_player_page.dart';
 
 class FavoritePage extends StatelessWidget {
@@ -64,15 +65,17 @@ class FavoritePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('ИЗБРАННОЕ',
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+              Text(
+                AppStrings.get('favorites_title').toUpperCase(),
+                style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 30),
-              const Expanded(
+              Expanded(
                 child: Center(
                   child: Text(
-                    "Войдите в аккаунт, чтобы добавлять видео в избранное",
+                    AppStrings.get('favorites_login_required'),
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16),
+                    style: const TextStyle(fontSize: 16),
                   ),
                 ),
               ),
@@ -109,17 +112,19 @@ class FavoritePage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('ИЗБРАННОЕ',
-                        style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+                    Text(
+                      AppStrings.get('favorites_title').toUpperCase(),
+                      style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                    ),
 
                     const SizedBox(height: 20),
 
                     videos.isEmpty
-                        ? const Expanded(
+                        ? Expanded(
                             child: Center(
                               child: Text(
-                                "Избранных видео пока нет",
-                                style: TextStyle(fontSize: 16),
+                                AppStrings.get('favorites_empty'),
+                                style: const TextStyle(fontSize: 16),
                               ),
                             ),
                           )
@@ -200,7 +205,7 @@ class FavoritePage extends StatelessWidget {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    video['title'] ?? "Без названия",
+                                                    video['title'] ?? AppStrings.get('video_no_title'),
                                                     style: TextStyle(
                                                       fontSize: 20,
                                                       fontWeight: FontWeight.w700,
@@ -226,6 +231,7 @@ class FavoritePage extends StatelessWidget {
                                             IconButton(
                                               icon: const Icon(Icons.favorite,
                                                   color: Colors.red),
+                                              tooltip: AppStrings.get('favorites_added'),
                                               onPressed: () async {
                                                 await _removeFromFavorites(
                                                     user.uid, videoId);

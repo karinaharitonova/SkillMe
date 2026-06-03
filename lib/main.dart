@@ -25,19 +25,16 @@ import 'package:myapp/pages/settings_page.dart';
 import 'package:myapp/pages/registration/change_password_page.dart';
 import 'package:myapp/utils/user_preferences.dart';
 
-
 void main() async {
-  
   WidgetsFlutterBinding.ensureInitialized();
 
   // 1. Загружаем .env
   await dotenv.load(fileName: ".env");
-final url = dotenv.env['SUPABASE_URL'] ?? 'NULL';
+  final url = dotenv.env['SUPABASE_URL'] ?? 'NULL';
   final anon = dotenv.env['SUPABASE_ANON_KEY'] ?? 'NULL';
-  print('SUPABASE_URL prefix: ${url.length>20 ? url.substring(0,20) : url}');
-  print('SUPABASE_ANON_KEY prefix: ${anon.length>8 ? anon.substring(0,8) : anon}');
+  print('SUPABASE_URL prefix: ${url.length > 20 ? url.substring(0, 20) : url}');
+  print('SUPABASE_ANON_KEY prefix: ${anon.length > 8 ? anon.substring(0, 8) : anon}');
 
-  
   // 2. Инициализируем Firebase
   await Firebase.initializeApp();
 
@@ -47,17 +44,19 @@ final url = dotenv.env['SUPABASE_URL'] ?? 'NULL';
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
-  // 4. Настройка уведомлений
+  // 4. Загружаем профиль пользователя (включая настройки языка)
+  await UserPreferences.loadUser();
+
+  // 5. Настройка уведомлений
   await _requestNotificationPermission();
   await _syncInitialNotificationState();
-  await UserPreferences.loadUser();
   await _saveDeviceToken();
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     print("Получено уведомление: ${message.notification?.title}");
   });
 
-  // 5. Запуск приложения
+  // 6. Запуск приложения
   runApp(
     MultiProvider(
       providers: [
@@ -107,6 +106,8 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      
+      // Локаль из LanguageProvider
       locale: languageProvider.locale,
       supportedLocales: const [
         Locale('ru'),
@@ -117,6 +118,8 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      
+      // Тема
       themeMode: themeProvider.isDark ? ThemeMode.dark : ThemeMode.light,
       theme: ThemeData(
         brightness: Brightness.light,
@@ -142,6 +145,7 @@ class MyApp extends StatelessWidget {
           type: BottomNavigationBarType.fixed,
         ),
       ),
+      
       home: const SplashScreen(),
       routes: {
         '/first': (context) => const FirstPage(),

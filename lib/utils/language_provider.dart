@@ -1,30 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:myapp/utils/app_strings.dart';
 
 class LanguageProvider extends ChangeNotifier {
-  Locale _locale = const Locale('ru');
+  String _currentLanguage = 'ru';
 
-  Locale get locale => _locale;
+  String get currentLanguage => _currentLanguage;
+
+  // Геттер для MaterialApp (возвращает Locale)
+  Locale get locale => Locale(_currentLanguage);
 
   LanguageProvider() {
     _loadLanguage();
   }
 
-  void setLanguage(String code) {
-    _locale = Locale(code);
-    _saveLanguage(code);
-    notifyListeners();
-  }
-
+  // Загрузка языка из SharedPreferences
   Future<void> _loadLanguage() async {
     final prefs = await SharedPreferences.getInstance();
-    final code = prefs.getString('language') ?? 'ru';
-    _locale = Locale(code);
+    _currentLanguage = prefs.getString('language') ?? 'ru';
+    
+    // Обновляем AppStrings
+    AppStrings.setLanguage(_currentLanguage);
+    
     notifyListeners();
   }
 
-  Future<void> _saveLanguage(String code) async {
+  // Установка нового языка
+  Future<void> setLanguage(String language) async {
+    if (language != 'ru' && language != 'en') return;
+
+    _currentLanguage = language;
+    
+    // Обновляем AppStrings
+    AppStrings.setLanguage(language);
+
+    // Сохраняем в SharedPreferences
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString('language', code);
+    await prefs.setString('language', language);
+
+    // Уведомляем все виджеты об изменении
+    notifyListeners();
   }
 }

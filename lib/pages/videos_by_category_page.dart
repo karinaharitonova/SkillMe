@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:myapp/utils/app_strings.dart';
 import 'video_player_page.dart';
 
 class VideosByCategoryPage extends StatefulWidget {
@@ -61,7 +62,7 @@ class _VideosByCategoryPageState extends State<VideosByCategoryPage> {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Войдите, чтобы добавить в избранное')),
+        SnackBar(content: Text(AppStrings.get('favorites_login_required'))),
       );
       return;
     }
@@ -129,7 +130,7 @@ class _VideosByCategoryPageState extends State<VideosByCategoryPage> {
               final doc = docs[index];
               final video = doc.data() as Map<String, dynamic>? ?? {};
 
-              final title = (video['title'] as String?) ?? "Без названия";
+              final title = (video['title'] as String?) ?? AppStrings.get('video_no_title');
               final videoUrl = (video['videoUrl'] as String?) ?? "";
               final thumb = (video['thumbnailUrl'] as String?) ?? "";
               final duration = video['duration'] ?? 0;
@@ -206,7 +207,7 @@ class _VideosByCategoryPageState extends State<VideosByCategoryPage> {
                     const SizedBox(height: 5),
 
                     Text(
-                      "Длительность: $duration сек",
+                      AppStrings.get('video_duration').replaceAll('{seconds}', duration.toString()),
                       style: const TextStyle(
                         fontSize: 15,
                         color: Colors.grey,
@@ -226,7 +227,9 @@ class _VideosByCategoryPageState extends State<VideosByCategoryPage> {
                             color: isFav ? Colors.red : Colors.black,
                           ),
                           const SizedBox(width: 6),
-                          Text(isFav ? "В избранном" : "В избранное"),
+                          Text(isFav 
+                              ? AppStrings.get('favorites_added') 
+                              : AppStrings.get('favorites_add')),
                         ],
                       ),
                     ),
@@ -243,10 +246,20 @@ class _VideosByCategoryPageState extends State<VideosByCategoryPage> {
   }
 
   Widget _buildError() {
-    return const Center(child: Text("Нет соединения", style: TextStyle(fontSize: 18)));
+    return Center(
+      child: Text(
+        AppStrings.get('no_connection'),
+        style: const TextStyle(fontSize: 18),
+      ),
+    );
   }
 
   Widget _buildEmpty() {
-    return const Center(child: Text("Видео пока нет", style: TextStyle(fontSize: 18)));
+    return Center(
+      child: Text(
+        AppStrings.get('video_empty'),
+        style: const TextStyle(fontSize: 18),
+      ),
+    );
   }
 }

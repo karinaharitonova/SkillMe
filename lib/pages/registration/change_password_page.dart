@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:myapp/utils/app_strings.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
@@ -38,12 +39,12 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     final confirmPassword = confirmPasswordController.text.trim();
 
     if (newPassword != confirmPassword) {
-      _showMessage("Пароли не совпадают");
+      _showMessage(AppStrings.get('msg_passwords_not_match'));
       return;
     }
 
     if (newPassword.length < 6) {
-      _showMessage("Пароль должен быть минимум 6 символов");
+      _showMessage(AppStrings.get('password_min_length_full'));
       return;
     }
 
@@ -58,16 +59,16 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       await user.reauthenticateWithCredential(cred);
       await user.updatePassword(newPassword);
 
-      _showMessage("Пароль успешно изменён");
+      _showMessage(AppStrings.get('password_changed'));
       if (context.mounted) Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
-        _showMessage("Неверный старый пароль");
+        _showMessage(AppStrings.get('wrong_old_password'));
       } else {
-        _showMessage("Ошибка: ${e.message ?? 'Попробуйте снова'}");
+        _showMessage('${AppStrings.get('error')}: ${e.message ?? AppStrings.get('error_try_again')}');
       }
     } catch (_) {
-      _showMessage("Ошибка: попробуйте позже");
+      _showMessage(AppStrings.get('error_try_later'));
     } finally {
       if (mounted) setState(() => isLoading = false);
     }
@@ -107,6 +108,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     required VoidCallback toggle,
     required double width,
     required double height,
+    required bool isNewPassword,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -125,8 +127,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         controller: controller,
         obscureText: obscure,
         validator: (v) {
-          if (v == null || v.trim().isEmpty) return 'Поле не может быть пустым';
-          if (hint == 'Новый пароль' && v.trim().length < 6) return 'Минимум 6 символов';
+          if (v == null || v.trim().isEmpty) return AppStrings.get('msg_field_required');
+          if (isNewPassword && v.trim().length < 6) return AppStrings.get('password_min_length');
           return null;
         },
         decoration: _inputDecoration(
@@ -169,42 +171,43 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                      Row(
-  children: [
-    IconButton(
-      padding: EdgeInsets.zero,
-      icon: const Icon(Icons.arrow_back),
-      color: Theme.of(context).iconTheme.color,
-      iconSize: (width * 0.08).clamp(20.0, 32.0), // ограничиваем размер иконки
-      onPressed: () => Navigator.pop(context),
-    ),
-    const SizedBox(width: 12),
-    Expanded(
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        alignment: Alignment.centerLeft,
-        child: Text(
-          'ИЗМЕНИТЬ ПАРОЛЬ',
-          style: TextStyle(
-            fontSize: 28, 
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    ),
-  ],
-),
+                        Row(
+                          children: [
+                            IconButton(
+                              padding: EdgeInsets.zero,
+                              icon: const Icon(Icons.arrow_back),
+                              color: Theme.of(context).iconTheme.color,
+                              iconSize: (width * 0.08).clamp(20.0, 32.0),
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  AppStrings.get('change_password_title').toUpperCase(),
+                                  style: const TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
 
                         SizedBox(height: height * 0.05),
 
                         // Старый пароль
                         _buildPasswordField(
                           controller: oldPasswordController,
-                          hint: 'Старый пароль',
+                          hint: AppStrings.get('old_password'),
                           obscure: hideOld,
                           toggle: () => setState(() => hideOld = !hideOld),
                           width: width,
                           height: height,
+                          isNewPassword: false,
                         ),
 
                         SizedBox(height: height * 0.03),
@@ -212,11 +215,12 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         // Новый пароль
                         _buildPasswordField(
                           controller: newPasswordController,
-                          hint: 'Новый пароль',
+                          hint: AppStrings.get('new_password'),
                           obscure: hideNew,
                           toggle: () => setState(() => hideNew = !hideNew),
                           width: width,
                           height: height,
+                          isNewPassword: true,
                         ),
 
                         SizedBox(height: height * 0.03),
@@ -224,11 +228,12 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         // Подтверждение пароля
                         _buildPasswordField(
                           controller: confirmPasswordController,
-                          hint: 'Подтвердите пароль',
+                          hint: AppStrings.get('confirm_password'),
                           obscure: hideConfirm,
                           toggle: () => setState(() => hideConfirm = !hideConfirm),
                           width: width,
                           height: height,
+                          isNewPassword: false,
                         ),
 
                         SizedBox(height: height * 0.05),
@@ -252,7 +257,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                     child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                                   )
                                 : Text(
-                                    'Сохранить',
+                                    AppStrings.get('save'),
                                     style: TextStyle(
                                       fontSize: width * 0.05,
                                       color: Colors.white,

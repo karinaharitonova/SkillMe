@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/pages/snack_bar.dart';
 import 'package:myapp/pages/registration/email_page.dart';
+import 'package:myapp/utils/app_strings.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final apiKey = dotenv.env['API_KEY'];
@@ -42,7 +43,7 @@ class _SignUpPageState extends State<SignUpPage> {
     if (passwordController.text.trim() != repeatPasswordController.text.trim()) {
       SnackBarService.showSnackBar(
         context,
-        'Пароли должны совпадать',
+        AppStrings.get('signup_passwords_not_match'),
         true,
       );
       return;
@@ -57,13 +58,13 @@ class _SignUpPageState extends State<SignUpPage> {
       if (e.code == 'email-already-in-use') {
         SnackBarService.showSnackBar(
           context,
-          'Такой Email уже используется',
+          AppStrings.get('signup_email_in_use'),
           true,
         );
       } else {
         SnackBarService.showSnackBar(
           context,
-          'Ошибка! Попробуйте снова.',
+          AppStrings.get('login_error_unknown'),
           true,
         );
       }
@@ -142,10 +143,10 @@ class _SignUpPageState extends State<SignUpPage> {
                             // Email
                             _buildGradientField(
                               controller: emailController,
-                              hint: 'Введите Email',
+                              hint: AppStrings.get('email_hint'),
                               validator: (email) =>
                                   email != null && !EmailValidator.validate(email)
-                                      ? 'Введите корректный Email'
+                                      ? AppStrings.get('email_invalid')
                                       : null,
                               width: width,
                               height: height,
@@ -156,11 +157,11 @@ class _SignUpPageState extends State<SignUpPage> {
                             // Пароль
                             _buildGradientField(
                               controller: passwordController,
-                              hint: 'Введите пароль',
+                              hint: AppStrings.get('password_hint'),
                               obscure: isHiddenPassword,
                               validator: (value) =>
                                   value != null && value.length < 6
-                                      ? 'Минимум 6 символов'
+                                      ? AppStrings.get('password_min_length')
                                       : null,
                               suffix: IconButton(
                                 icon: Icon(
@@ -180,11 +181,11 @@ class _SignUpPageState extends State<SignUpPage> {
                             //  Повтор пароля
                             _buildGradientField(
                               controller: repeatPasswordController,
-                              hint: 'Повторите пароль',
+                              hint: AppStrings.get('repeat_password_hint'),
                               obscure: isHiddenPassword,
                               validator: (value) =>
                                   value != null && value.length < 6
-                                      ? 'Минимум 6 символов'
+                                      ? AppStrings.get('password_min_length')
                                       : null,
                               suffix: IconButton(
                                 icon: Icon(
@@ -215,7 +216,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 ),
                                 onPressed: signUp,
                                 child: Text(
-                                  'Зарегистрироваться',
+                                  AppStrings.get('auth_sign_up'),
                                   style: TextStyle(
                                     fontSize: width * 0.05,
                                     color: Colors.white,
@@ -230,9 +231,9 @@ class _SignUpPageState extends State<SignUpPage> {
                               child: GestureDetector(
                                 onTap: () =>
                                     Navigator.pushNamed(context, '/login'),
-                                child: const Text(
-                                  'Уже есть аккаунт? Войти',
-                                  style: TextStyle(
+                                child: Text(
+                                  AppStrings.get('already_have_account_login'),
+                                  style: const TextStyle(
                                     decoration: TextDecoration.underline,
                                     color: Colors.black,
                                   ),
@@ -281,8 +282,10 @@ class _SignUpPageState extends State<SignUpPage> {
         controller: controller,
         obscureText: obscure,
         validator: validator,
+        style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
           hintText: hint,
+          hintStyle: const TextStyle(color: Colors.black),
           contentPadding: EdgeInsets.symmetric(
             horizontal: width * 0.05,
             vertical: height * 0.02,
