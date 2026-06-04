@@ -57,6 +57,7 @@ class FavoritePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
 
+    // Если пользователь НЕ авторизован - показываем кнопки
     if (user == null) {
       return Scaffold(
         resizeToAvoidBottomInset: false,
@@ -72,10 +73,53 @@ class FavoritePage extends StatelessWidget {
               const SizedBox(height: 30),
               Expanded(
                 child: Center(
-                  child: Text(
-                    AppStrings.get('favorites_login_required'),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 16),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.favorite_border,
+                        size: 80,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        AppStrings.get('favorites_login_required'),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                      
+                      // Кнопка "Войти"
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF5D65D6),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/login');
+                          },
+                          child: Text(
+                            AppStrings.get('auth_sign_in'),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 15),
+                      
+                    ],
                   ),
                 ),
               ),
@@ -85,6 +129,7 @@ class FavoritePage extends StatelessWidget {
       );
     }
 
+    // Если пользователь авторизован - показываем избранное
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
       stream: _favoritesStream(user.uid),
       builder: (context, favSnap) {
@@ -122,9 +167,23 @@ class FavoritePage extends StatelessWidget {
                     videos.isEmpty
                         ? Expanded(
                             child: Center(
-                              child: Text(
-                                AppStrings.get('favorites_empty'),
-                                style: const TextStyle(fontSize: 16),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.favorite_border,
+                                    size: 80,
+                                    color: Colors.grey,
+                                  ),
+                                  const SizedBox(height: 20),
+                                  Text(
+                                    AppStrings.get('favorites_empty'),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           )

@@ -57,7 +57,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
       if (mounted) setState(() => _isReady = true);
     } catch (e) {
-      print('❌ Ошибка: $e');
+      print('Ошибка: $e');
       if (mounted) {
         setState(() => _errorMessage = e.toString());
       }
@@ -91,11 +91,10 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     return "$minutes:$seconds";
   }
 
-  // Локализация категории: если есть ключ — берём перевод, иначе — как есть
+
   String _localizedCategory(String? category) {
     if (category == null || category.isEmpty) return '';
     
-    // Маппинг русских названий категорий на ключи
     const categoryKeys = {
       'Музыка': 'category_music',
       'Music': 'category_music',
@@ -252,7 +251,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
               ),
             ),
 
-          // Название и категория (НАД ползунком)
+          // Название и категория 
           if (_showUI && _isReady)
             Positioned(
               left: 20,

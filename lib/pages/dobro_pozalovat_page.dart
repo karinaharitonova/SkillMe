@@ -18,7 +18,7 @@ class DobroPozalovatPage extends StatelessWidget {
 
           Positioned.fill(
             child: Image.asset(
-              'lib/assets/images/A4 - 1.png',
+              'lib/assets/images/A4_1.png',
               fit: BoxFit.cover,
             ),
           ),

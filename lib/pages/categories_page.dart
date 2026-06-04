@@ -4,7 +4,7 @@ import 'package:myapp/utils/app_strings.dart';
 
 class CategoryModel {
   final String id;
-  final String nameKey; // Ключ для AppStrings
+  final String nameKey; 
   final IconData icon;
 
   CategoryModel({
